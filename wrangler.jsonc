@@ -14,14 +14,12 @@
 		}
 	],
 	"vars": {
-		// Campo personalizado criado no Bitrix24 > CRM > Configurações > Campos do negócio
-		// Troque pelo código real após criar o campo (ex: "UF_CRM_1234567890")
-		"BITRIX_FIELD_EXTENSO": "UF_CRM_VALOR_EXTENSO"
+		// URL pública do Worker (sem barra no final)
+		"APP_URL": "https://chanfana-openapi-template.gustavo-b73.workers.dev"
 	}
 
-	// BITRIX_WEBHOOK_URL deve ser salva como secret, NUNCA aqui.
-	// Execute no terminal:
-	//   npx wrangler secret put BITRIX_WEBHOOK_URL
-	// e cole a URL do webhook de entrada do Bitrix24:
-	//   https://seudominio.bitrix24.com.br/rest/1/TOKEN/
+	// Secrets — execute no terminal:
+	//   npx wrangler secret put CLIENT_ID
+	//   npx wrangler secret put CLIENT_SECRET
+	// Valores obtidos ao cadastrar o app no Portal de Parceiros Bitrix24
 }

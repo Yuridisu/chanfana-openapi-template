@@ -12,5 +12,16 @@
 			"database_name": "openapi-template-db",
 			"database_id": "74ad9021-956e-4716-be46-b745edb2c55a"
 		}
-	]
+	],
+	"vars": {
+		// Campo personalizado criado no Bitrix24 > CRM > Configurações > Campos do negócio
+		// Troque pelo código real após criar o campo (ex: "UF_CRM_1234567890")
+		"BITRIX_FIELD_EXTENSO": "UF_CRM_VALOR_EXTENSO"
+	}
+
+	// BITRIX_WEBHOOK_URL deve ser salva como secret, NUNCA aqui.
+	// Execute no terminal:
+	//   npx wrangler secret put BITRIX_WEBHOOK_URL
+	// e cole a URL do webhook de entrada do Bitrix24:
+	//   https://seudominio.bitrix24.com.br/rest/1/TOKEN/
 }

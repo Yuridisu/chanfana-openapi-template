@@ -295,15 +295,70 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
   const domain = url.searchParams.get("domain") ?? "";
   const saved  = url.searchParams.get("saved");
 
-  if (!domain) return html(`<h2 class="error">❌ Domínio não informado</h2>`);
+  const successMsg = saved === "1"
+    ? `<p class="success">✅ Campo salvo com sucesso!</p>`
+    : "";
+
+  // Se não tem domínio na URL, usa BX24.js para obtê-lo dinamicamente
+  if (!domain) {
+    return new Response(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Valor por Extenso</title>
+  <script src="https://api.bitrix24.com/api/v1/"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f4f5f7; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .card { background: #fff; border-radius: 10px; padding: 36px; max-width: 500px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+    h2 { color: #2e7d32; margin-bottom: 16px; }
+    p { color: #444; line-height: 1.6; margin-bottom: 12px; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #333; }
+    input[type=text] { width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 16px; }
+    button { background: #2e7d32; color: #fff; border: none; padding: 11px 24px; border-radius: 6px; font-size: 15px; cursor: pointer; }
+    button:hover { background: #1b5e20; }
+    code { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: .88em; }
+    .hint { font-size: .82em; color: #777; margin-top: -10px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>⚙️ Valor por Extenso</h2>
+  <p>Configure o campo de texto que receberá o valor do negócio por extenso.</p>
+  ${successMsg}
+  <form id="setupForm" method="POST" action="/setup">
+    <input type="hidden" name="domain" id="domainField" value="">
+    <label for="field">Código do campo personalizado</label>
+    <input type="text" id="field" name="field_extenso"
+      placeholder="Ex: UF_CRM_1234567890">
+    <p class="hint">Encontre o código em CRM → Configurações → Campos do negócio.</p>
+    <button type="submit">Salvar configuração</button>
+  </form>
+</div>
+<script>
+  BX24.init(function() {
+    var auth = BX24.getAuth();
+    var domain = auth.domain || BX24.getDomain();
+    document.getElementById('domainField').value = domain;
+
+    // Carrega o campo atual via fetch
+    fetch('/setup-data?domain=' + encodeURIComponent(domain))
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.field_extenso) {
+          document.getElementById('field').value = d.field_extenso;
+        }
+      });
+  });
+</script>
+</body>
+</html>`, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  }
 
   const inst = await getInstallation(env.DB, domain);
   if (!inst) return html(`<h2 class="error">❌ Instalação não encontrada</h2>
     <p>Reinstale o aplicativo no Bitrix24.</p>`);
-
-  const successMsg = saved === "1"
-    ? `<p class="success">✅ Campo salvo com sucesso!</p>`
-    : "";
 
   return html(`
     <h2>⚙️ Valor por Extenso</h2>
@@ -449,6 +504,22 @@ async function handleJsonApi(request: Request): Promise<Response> {
 }
 
 
+
+// ─────────────────────────────────────────────
+// Rota: GET /setup-data
+// Retorna JSON com dados da instalação para o setup via BX24
+// ─────────────────────────────────────────────
+async function handleSetupData(request: Request, env: Env): Promise<Response> {
+  const url    = new URL(request.url);
+  const domain = url.searchParams.get("domain") ?? "";
+  if (!domain) return jsonResp({ error: "domain ausente" }, 400);
+
+  const inst = await getInstallation(env.DB, domain);
+  if (!inst) return jsonResp({ error: "não encontrado" }, 404);
+
+  return jsonResp({ field_extenso: inst.field_extenso });
+}
+
 // ─────────────────────────────────────────────
 // Rota: GET /debug
 // Renova token e exibe status do app
@@ -488,6 +559,7 @@ export default {
     if (pathname === "/install" && (method === "GET" || method === "HEAD"))  return html(`<h2>✅ Valor por Extenso</h2><p>App instalado corretamente. Acesse pelo Bitrix24.</p>`);
     if (pathname === "/debug"   && method === "GET")  return handleDebug(request, env);
     if (pathname === "/setup"   && (method === "GET" || method === "HEAD"))  return handleSetupGet(request, env);
+    if (pathname === "/setup-data" && method === "GET") return handleSetupData(request, env);
     if (pathname === "/setup"   && method === "POST") return handleSetupPost(request, env);
     if (pathname === "/bitrix"  && method === "POST") return handleBitrixEvent(request, env);
 

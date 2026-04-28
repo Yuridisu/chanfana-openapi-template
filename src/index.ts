@@ -163,11 +163,20 @@ async function refreshToken(env: Env, inst: Installation): Promise<Installation>
 // ─────────────────────────────────────────────
 async function callBitrix(endpoint: string, method: string, params: Record<string, string>, token: string): Promise<any> {
   const body = new URLSearchParams({ ...params, auth: token });
-  const res = await fetch(`${endpoint.replace(/\/$/, "")}/${method}.json`, {
+  // client_endpoint já termina com /rest/ — não adicionar .json
+  const url = `${endpoint.replace(/\/$/, "")}/${method}`;
+  const res = await fetch(url, {
     method: "POST",
     body,
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
-  return res.json();
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    console.error("callBitrix parse error:", url, text.slice(0, 200));
+    throw new Error(`Bitrix API returned non-JSON: ${text.slice(0, 100)}`);
+  }
 }
 
 async function registerEvents(endpoint: string, token: string, handlerUrl: string): Promise<void> {

@@ -15,7 +15,7 @@
 	],
 	"vars": {
 		// URL pública do Worker (sem barra no final)
-		"APP_URL": "https://chanfana-openapi-template.gustavo-b73.workers.dev"
+		"APP_URL": "https://extenso.tljapp.com"
 	}
 
 	// Secrets — execute no terminal:

@@ -163,19 +163,21 @@ async function refreshToken(env: Env, inst: Installation): Promise<Installation>
 // ─────────────────────────────────────────────
 async function callBitrix(endpoint: string, method: string, params: Record<string, string>, token: string): Promise<any> {
   const body = new URLSearchParams({ ...params, auth: token });
-  // client_endpoint já termina com /rest/ — não adicionar .json
   const url = `${endpoint.replace(/\/$/, "")}/${method}.json`;
   const res = await fetch(url, {
     method: "POST",
     body,
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": "Mozilla/5.0 (compatible; ValorExtensoBR/1.0)",
+    },
   });
   const text = await res.text();
+  console.log(`callBitrix ${method} status=${res.status} url=${url} body_preview=${text.slice(0, 80)}`);
   try {
     return JSON.parse(text);
   } catch(e) {
-    console.error("callBitrix parse error:", url, text.slice(0, 200));
-    throw new Error(`Bitrix API returned non-JSON: ${text.slice(0, 100)}`);
+    throw new Error(`Bitrix API returned non-JSON [${res.status}]: ${text.slice(0, 100)}`);
   }
 }
 
@@ -461,9 +463,9 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // Usa diretamente o token e client_endpoint enviados pelo Bitrix24 no evento
-  const useToken    = accessToken || inst.access_token;
+  // Usa client_endpoint (funciona com CRM) e token do evento
   const useEndpoint = clientEndpoint || inst.client_endpoint;
+  const useToken    = accessToken || inst.access_token;
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);
@@ -563,12 +565,7 @@ async function handleDebug(request: Request, env: Env): Promise<Response> {
   // Checa eventos registrados
   const events = await callBitrix(inst.client_endpoint, "event.get", {}, inst.access_token);
 
-  // Testa crm.deal.list com client_endpoint e server_endpoint
-  const dealTestClient = await callBitrix(inst.client_endpoint, "crm.deal.list", { select: '["ID","OPPORTUNITY"]', limit: "1" }, inst.access_token);
-  const serverEndpoint = "https://oauth.bitrix.info/rest/";
-  const dealTestServer = await callBitrix(serverEndpoint, "crm.deal.list", { select: '["ID","OPPORTUNITY"]', limit: "1" }, inst.access_token);
-
-  return jsonResp({ domain, access_token: inst.access_token, app_info: info, events, dealTestClient, dealTestServer });
+  return jsonResp({ domain, access_token: inst.access_token, app_info: info, events });
 }
 
 // ─────────────────────────────────────────────

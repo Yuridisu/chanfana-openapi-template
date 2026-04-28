@@ -173,7 +173,6 @@ async function callBitrix(endpoint: string, method: string, params: Record<strin
     },
   });
   const text = await res.text();
-  console.log(`callBitrix ${method} status=${res.status} url=${url} body_preview=${text.slice(0, 80)}`);
   try {
     return JSON.parse(text);
   } catch(e) {
@@ -438,7 +437,6 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   // Debug: loga todos os campos recebidos
   const allFields: Record<string, string> = {};
   body.forEach((v, k) => { allFields[k] = v; });
-  console.log("BITRIX EVENT PAYLOAD:", JSON.stringify(allFields));
 
   const event          = (body.get("event") ?? "").toUpperCase();
   const domain         = body.get("auth[domain]") ?? body.get("DOMAIN") ?? body.get("domain") ?? "";
@@ -449,8 +447,6 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
 
   // Usa server_endpoint (oauth.bitrix.info) pois é o que aceita tokens OAuth de apps
   const apiEndpoint    = serverEndpoint || clientEndpoint;
-
-  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId, "API_ENDPOINT:", apiEndpoint);
 
   if (!["ONCRMDEALADD", "ONCRMDEALUPDATE"].includes(event)) {
     return jsonResp({ skipped: true, event });
@@ -468,7 +464,6 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   const useToken    = inst.access_token;
   // Usa SEMPRE o client_endpoint do banco (não o do evento)
   const useEndpoint = inst.client_endpoint;
-  console.log("USING endpoint:", useEndpoint, "token_prefix:", useToken.slice(0,8));
 
   // Busca o negócio via crm.deal.list com filtro por ID
   const dealResp = await callBitrix(useEndpoint, "crm.deal.list", {
@@ -490,14 +485,11 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
     return jsonResp({ ok: true, skipped: true, reason: "valor já atualizado", extenso });
   }
 
-  console.log("EXTENSO:", extenso, "FIELD:", inst.field_extenso);
-
   // Atualiza o campo personalizado
   const updateResp = await callBitrix(useEndpoint, "crm.deal.update", {
     id: dealId,
     [`fields[${inst.field_extenso}]`]: extenso,
   }, useToken);
-  console.log("UPDATE RESP:", JSON.stringify(updateResp));
 
   return jsonResp({ ok: true, domain, dealId, opportunity, extenso });
 }
@@ -591,7 +583,6 @@ export default {
 
     if (pathname === "/install" && method === "POST") return handleInstall(request, env);
     if (pathname === "/install" && (method === "GET" || method === "HEAD"))  return html(`<h2>✅ Valor por Extenso</h2><p>App instalado corretamente. Acesse pelo Bitrix24.</p>`);
-    if (pathname === "/debug"   && method === "GET")  return handleDebug(request, env);
     if (pathname === "/setup"   && (method === "GET" || method === "HEAD"))  return handleSetupGet(request, env);
     if (pathname === "/setup-data" && method === "GET") return handleSetupData(request, env);
     if (pathname === "/setup"   && method === "POST") return handleSetupPost(request, env);

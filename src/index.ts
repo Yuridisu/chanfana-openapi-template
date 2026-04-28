@@ -164,7 +164,7 @@ async function refreshToken(env: Env, inst: Installation): Promise<Installation>
 async function callBitrix(endpoint: string, method: string, params: Record<string, string>, token: string): Promise<any> {
   const body = new URLSearchParams({ ...params, auth: token });
   // client_endpoint já termina com /rest/ — não adicionar .json
-  const url = `${endpoint.replace(/\/$/, "")}/${method}`;
+  const url = `${endpoint.replace(/\/$/, "")}/${method}.json`;
   const res = await fetch(url, {
     method: "POST",
     body,
@@ -457,15 +457,15 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // Usa o token e endpoint enviados pelo Bitrix24 no evento (sempre frescos)
-  // Só renova via refresh se não vieram no payload
-  const useToken    = accessToken    || (await refreshToken(env, inst)).access_token;
-  const useEndpoint = clientEndpoint || inst.client_endpoint;
-
-  // Atualiza no banco se o endpoint mudou
+  // Atualiza endpoint no banco se mudou
   if (clientEndpoint && clientEndpoint !== inst.client_endpoint) {
-    await updateTokens(env.DB, domain, accessToken, inst.refresh_token, inst.expires_at);
+    inst.client_endpoint = clientEndpoint;
   }
+
+  // Sempre renova o token via refresh para garantir permissões corretas
+  inst = await refreshToken(env, inst);
+  const useToken    = inst.access_token;
+  const useEndpoint = clientEndpoint || inst.client_endpoint;
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);

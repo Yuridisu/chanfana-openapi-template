@@ -336,16 +336,29 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   const text = await request.text();
   const body = new URLSearchParams(text);
 
+  // Debug: loga todos os campos recebidos
+  const allFields: Record<string, string> = {};
+  body.forEach((v, k) => { allFields[k] = v; });
+  console.log("BITRIX EVENT PAYLOAD:", JSON.stringify(allFields));
+
   const event  = (body.get("event") ?? "").toUpperCase();
-  const domain = body.get("auth[domain]") ?? body.get("DOMAIN") ?? "";
+
+  // O Bitrix24 pode enviar o domínio em diferentes campos
+  const domain = body.get("auth[domain]")
+    ?? body.get("DOMAIN")
+    ?? body.get("domain")
+    ?? body.get("auth_domain")
+    ?? "";
   const dealId = body.get("data[FIELDS][ID]") ?? "";
+
+  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId);
 
   if (!["ONCRMDEALADD", "ONCRMDEALUPDATE"].includes(event)) {
     return jsonResp({ skipped: true, event });
   }
 
   if (!domain || !dealId) {
-    return jsonResp({ error: "domain ou dealId ausente" }, 400);
+    return jsonResp({ error: "domain ou dealId ausente", fields: allFields }, 400);
   }
 
   let inst = await getInstallation(env.DB, domain);

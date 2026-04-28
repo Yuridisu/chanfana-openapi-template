@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#1e3a8a"/>
+      <stop offset="55%" stop-color="#13245c"/>
+      <stop offset="100%" stop-color="#0a1530"/>
+    </linearGradient>
+    <linearGradient id="symbolGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <radialGradient id="innerGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%"  stop-color="#ffffff"/>
+      <stop offset="80%" stop-color="#eef3ff"/>
+      <stop offset="100%" stop-color="#dbe5fb"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Gear notches -->
+  <g fill="#0a1530">
+    <rect x="123" y="3" width="10" height="10" transform="rotate(45 128 8)"/>
+    <rect x="183" y="19" width="10" height="10" transform="rotate(75 188 24)"/>
+    <rect x="227" y="63" width="10" height="10" transform="rotate(105 232 68)"/>
+    <rect x="243" y="123" width="10" height="10" transform="rotate(135 248 128)"/>
+    <rect x="227" y="183" width="10" height="10" transform="rotate(165 232 188)"/>
+    <rect x="183" y="227" width="10" height="10" transform="rotate(195 188 232)"/>
+    <rect x="123" y="243" width="10" height="10" transform="rotate(225 128 248)"/>
+    <rect x="63" y="227" width="10" height="10" transform="rotate(255 68 232)"/>
+    <rect x="19" y="183" width="10" height="10" transform="rotate(285 24 188)"/>
+    <rect x="3" y="123" width="10" height="10" transform="rotate(315 8 128)"/>
+    <rect x="19" y="63" width="10" height="10" transform="rotate(345 24 68)"/>
+    <rect x="63" y="19" width="10" height="10" transform="rotate(15 68 24)"/>
+  </g>
+
+  <!-- Outer disc -->
+  <circle cx="128" cy="128" r="120" fill="url(#ringGrad)"/>
+  <!-- Inner disc -->
+  <circle cx="128" cy="128" r="98" fill="url(#innerGlow)"/>
+  <circle cx="128" cy="128" r="98" fill="none" stroke="#0a1530" stroke-width="2" opacity="0.25"/>
+
+  <!-- Circuit traces on the ring -->
+  <g stroke="#7aa7ff" stroke-width="1.6" fill="none" opacity="0.85">
+    <path d="M 80 24 Q 128 14 176 24"/>
+    <path d="M 232 80 Q 242 128 232 176"/>
+    <path d="M 176 232 Q 128 242 80 232"/>
+    <path d="M 24 176 Q 14 128 24 80"/>
+  </g>
+  <g fill="#9ec1ff">
+    <circle cx="80"  cy="24"  r="3"/>
+    <circle cx="176" cy="24"  r="3"/>
+    <circle cx="232" cy="80"  r="3"/>
+    <circle cx="232" cy="176" r="3"/>
+    <circle cx="176" cy="232" r="3"/>
+    <circle cx="80"  cy="232" r="3"/>
+    <circle cx="24"  cy="176" r="3"/>
+    <circle cx="24"  cy="80"  r="3"/>
+  </g>
+
+  <!-- Central $ symbol -->
+  <text x="128" y="182" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-weight="700"
+        font-size="160"
+        fill="url(#symbolGrad)">$</text>
+
+  <!-- Inner circuit nodes -->
+  <g fill="#1e3a8a" opacity="0.35">
+    <circle cx="60"  cy="128" r="2.2"/>
+    <circle cx="196" cy="128" r="2.2"/>
+    <circle cx="128" cy="60"  r="2.2"/>
+  </g>
+  <g stroke="#1e3a8a" stroke-width="1" opacity="0.25" fill="none">
+    <path d="M 60 128 L 70 128"/>
+    <path d="M 186 128 L 196 128"/>
+    <path d="M 128 60 L 128 70"/>
+  </g>
+</svg>

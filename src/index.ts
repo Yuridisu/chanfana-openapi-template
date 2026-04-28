@@ -386,20 +386,26 @@ async function handleSetupPost(request: Request, env: Env): Promise<Response> {
   const text = await request.text();
   const body = new URLSearchParams(text);
 
+  // Log todos os campos recebidos
+  const allFields: Record<string, string> = {};
+  body.forEach((v, k) => { allFields[k] = v; });
+  console.log("SETUP POST PAYLOAD:", JSON.stringify(allFields));
+
   // POST vindo do Bitrix24 após installFinish (contém DOMAIN mas não field_extenso)
   const bitrixDomain = body.get("DOMAIN") ?? body.get("domain") ?? "";
   const field        = (body.get("field_extenso") ?? "").trim();
 
   // Se não tem field_extenso, é o POST do Bitrix24 → redireciona para GET /setup
-  if (!field && bitrixDomain) {
+  if (!field) {
+    const redirectDomain = bitrixDomain || "unknown";
     return new Response(null, {
       status: 302,
-      headers: { Location: `/setup?domain=${encodeURIComponent(bitrixDomain)}` },
+      headers: { Location: `/setup?domain=${encodeURIComponent(redirectDomain)}` },
     });
   }
 
   if (!bitrixDomain || !field) {
-    return html(`<h2 class="error">❌ Dados inválidos</h2>`, 400);
+    return jsonResp({ error: "Dados inválidos", received: allFields }, 400);
   }
 
   await updateField(env.DB, bitrixDomain, field);

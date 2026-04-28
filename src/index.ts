@@ -475,8 +475,8 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
     "filter[ID]": dealId,
     "select[]": "OPPORTUNITY",
     "select[1]": "ID",
+    "select[2]": inst.field_extenso,
   }, useToken);
-  console.log("DEAL RESP:", JSON.stringify(dealResp).slice(0, 200));
   const deal = dealResp?.result?.[0];
   if (!deal) return jsonResp({ error: `Deal ${dealId} não encontrado`, resp: dealResp }, 404);
 
@@ -484,6 +484,12 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   if (Number.isNaN(opportunity)) return jsonResp({ error: "OPPORTUNITY inválido" }, 400);
 
   const extenso = valorPorExtensoBR(opportunity);
+
+  // Evita loop: se o campo já tem o valor correto, não atualiza
+  if (deal[inst.field_extenso] === extenso) {
+    return jsonResp({ ok: true, skipped: true, reason: "valor já atualizado", extenso });
+  }
+
   console.log("EXTENSO:", extenso, "FIELD:", inst.field_extenso);
 
   // Atualiza o campo personalizado

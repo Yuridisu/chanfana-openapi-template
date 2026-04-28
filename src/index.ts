@@ -404,8 +404,8 @@ export default {
     const method = request.method;
 
     if (pathname === "/install" && method === "POST") return handleInstall(request, env);
-    if (pathname === "/install" && method === "GET")  return html(`<h2>✅ Valor por Extenso</h2><p>App instalado corretamente. Acesse pelo Bitrix24.</p>`);
-    if (pathname === "/setup"   && method === "GET")  return handleSetupGet(request, env);
+    if (pathname === "/install" && (method === "GET" || method === "HEAD"))  return html(`<h2>✅ Valor por Extenso</h2><p>App instalado corretamente. Acesse pelo Bitrix24.</p>`);
+    if (pathname === "/setup"   && (method === "GET" || method === "HEAD"))  return handleSetupGet(request, env);
     if (pathname === "/setup"   && method === "POST") return handleSetupPost(request, env);
     if (pathname === "/bitrix"  && method === "POST") return handleBitrixEvent(request, env);
 

@@ -386,26 +386,26 @@ async function handleSetupPost(request: Request, env: Env): Promise<Response> {
   const text = await request.text();
   const body = new URLSearchParams(text);
 
-  // Log todos os campos recebidos
-  const allFields: Record<string, string> = {};
-  body.forEach((v, k) => { allFields[k] = v; });
-  console.log("SETUP POST PAYLOAD:", JSON.stringify(allFields));
+  const urlObj2  = new URL(request.url);
+  const field    = (body.get("field_extenso") ?? "").trim();
 
-  // POST vindo do Bitrix24 após installFinish (contém DOMAIN mas não field_extenso)
-  const bitrixDomain = body.get("DOMAIN") ?? body.get("domain") ?? "";
-  const field        = (body.get("field_extenso") ?? "").trim();
+  // DOMAIN pode vir na query string (Bitrix24) ou no body (nosso formulário)
+  const bitrixDomain = urlObj2.searchParams.get("DOMAIN")
+    ?? urlObj2.searchParams.get("domain")
+    ?? body.get("DOMAIN")
+    ?? body.get("domain")
+    ?? "";
 
   // Se não tem field_extenso, é o POST do Bitrix24 → redireciona para GET /setup
   if (!field) {
-    const redirectDomain = bitrixDomain || "unknown";
     return new Response(null, {
       status: 302,
-      headers: { Location: `/setup?domain=${encodeURIComponent(redirectDomain)}` },
+      headers: { Location: `/setup?domain=${encodeURIComponent(bitrixDomain)}` },
     });
   }
 
-  if (!bitrixDomain || !field) {
-    return jsonResp({ error: "Dados inválidos", received: allFields }, 400);
+  if (!bitrixDomain) {
+    return html(`<h2 class="error">❌ Domínio não identificado</h2>`, 400);
   }
 
   await updateField(env.DB, bitrixDomain, field);

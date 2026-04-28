@@ -463,11 +463,12 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // O token do evento causa 403 no client_endpoint
-  // Renova o token via refresh (que funciona com client_endpoint)
+  // Renova token via refresh
   inst = await refreshToken(env, inst);
   const useToken    = inst.access_token;
-  const useEndpoint = clientEndpoint || inst.client_endpoint;
+  // Usa SEMPRE o client_endpoint do banco (não o do evento)
+  const useEndpoint = inst.client_endpoint;
+  console.log("USING endpoint:", useEndpoint, "token_prefix:", useToken.slice(0,8));
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);

@@ -563,7 +563,12 @@ async function handleDebug(request: Request, env: Env): Promise<Response> {
   // Checa eventos registrados
   const events = await callBitrix(inst.client_endpoint, "event.get", {}, inst.access_token);
 
-  return jsonResp({ domain, access_token: inst.access_token, app_info: info, events });
+  // Testa crm.deal.list com client_endpoint e server_endpoint
+  const dealTestClient = await callBitrix(inst.client_endpoint, "crm.deal.list", { select: '["ID","OPPORTUNITY"]', limit: "1" }, inst.access_token);
+  const serverEndpoint = "https://oauth.bitrix.info/rest/";
+  const dealTestServer = await callBitrix(serverEndpoint, "crm.deal.list", { select: '["ID","OPPORTUNITY"]', limit: "1" }, inst.access_token);
+
+  return jsonResp({ domain, access_token: inst.access_token, app_info: info, events, dealTestClient, dealTestServer });
 }
 
 // ─────────────────────────────────────────────

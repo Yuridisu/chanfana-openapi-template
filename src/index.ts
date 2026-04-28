@@ -257,6 +257,9 @@ async function handleInstall(request: Request, env: Env): Promise<Response> {
 
   await saveInstallation(env.DB, installation);
 
+  // Confirma instalação do app no Bitrix24 (obrigatório para STATUS=T)
+  await callBitrix(resolvedEndpoint, "app.install", {}, accessToken);
+
   // Registra os eventos de CRM
   const handlerUrl = `${env.APP_URL}/bitrix`;
   await registerEvents(resolvedEndpoint, accessToken, handlerUrl);

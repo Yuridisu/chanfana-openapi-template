@@ -270,18 +270,16 @@ async function handleInstall(request: Request, env: Env): Promise<Response> {
   <script src="https://api.bitrix24.com/api/v1/"></script>
 </head>
 <body>
-  <script>
-    BX24.init(function() {
-      BX24.installFinish();
-    });
-    // Redireciona para setup após instalar
-    setTimeout(function() {
-      window.location.href = "${setupUrl}";
-    }, 2000);
-  </script>
   <p style="font-family:Arial;text-align:center;padding:40px;color:#2e7d32">
     ✅ Instalando Valor por Extenso...
   </p>
+  <script>
+    BX24.init(function() {
+      BX24.installFinish(function() {
+        window.location.href = "${setupUrl}";
+      });
+    });
+  </script>
 </body>
 </html>`, {
     headers: { "Content-Type": "text/html; charset=utf-8" },
@@ -330,20 +328,30 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
 // Salva a escolha do campo
 // ─────────────────────────────────────────────
 async function handleSetupPost(request: Request, env: Env): Promise<Response> {
-  const text   = await request.text();
-  const body   = new URLSearchParams(text);
-  const domain = body.get("domain") ?? "";
-  const field  = (body.get("field_extenso") ?? "").trim();
+  const text = await request.text();
+  const body = new URLSearchParams(text);
 
-  if (!domain || !field) {
+  // POST vindo do Bitrix24 após installFinish (contém DOMAIN mas não field_extenso)
+  const bitrixDomain = body.get("DOMAIN") ?? body.get("domain") ?? "";
+  const field        = (body.get("field_extenso") ?? "").trim();
+
+  // Se não tem field_extenso, é o POST do Bitrix24 → redireciona para GET /setup
+  if (!field && bitrixDomain) {
+    return new Response(null, {
+      status: 302,
+      headers: { Location: `/setup?domain=${encodeURIComponent(bitrixDomain)}` },
+    });
+  }
+
+  if (!bitrixDomain || !field) {
     return html(`<h2 class="error">❌ Dados inválidos</h2>`, 400);
   }
 
-  await updateField(env.DB, domain, field);
+  await updateField(env.DB, bitrixDomain, field);
 
   return new Response(null, {
     status: 302,
-    headers: { Location: `/setup?domain=${encodeURIComponent(domain)}&saved=1` },
+    headers: { Location: `/setup?domain=${encodeURIComponent(bitrixDomain)}&saved=1` },
   });
 }
 

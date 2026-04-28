@@ -257,18 +257,34 @@ async function handleInstall(request: Request, env: Env): Promise<Response> {
 
   await saveInstallation(env.DB, installation);
 
-  // Confirma instalação do app no Bitrix24 (obrigatório para STATUS=T)
-  await callBitrix(resolvedEndpoint, "app.install", {}, accessToken);
-
   // Registra os eventos de CRM
   const handlerUrl = `${env.APP_URL}/bitrix`;
   await registerEvents(resolvedEndpoint, accessToken, handlerUrl);
 
-  // Redireciona para a tela de configuração
+  // Retorna página com BX24.installFinish() — obrigatório para INSTALLED=true
   const setupUrl = `${env.APP_URL}/setup?domain=${encodeURIComponent(domain)}`;
-  return new Response(null, {
-    status: 302,
-    headers: { Location: setupUrl },
+  return new Response(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://api.bitrix24.com/api/v1/"></script>
+</head>
+<body>
+  <script>
+    BX24.init(function() {
+      BX24.installFinish();
+    });
+    // Redireciona para setup após instalar
+    setTimeout(function() {
+      window.location.href = "${setupUrl}";
+    }, 2000);
+  </script>
+  <p style="font-family:Arial;text-align:center;padding:40px;color:#2e7d32">
+    ✅ Instalando Valor por Extenso...
+  </p>
+</body>
+</html>`, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 }
 

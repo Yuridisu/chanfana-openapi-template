@@ -424,6 +424,34 @@ async function handleJsonApi(request: Request): Promise<Response> {
   return jsonResp({ extenso: valorPorExtensoBR(value) });
 }
 
+
+// ─────────────────────────────────────────────
+// Rota: GET /debug
+// Renova token e exibe status do app
+// ─────────────────────────────────────────────
+async function handleDebug(request: Request, env: Env): Promise<Response> {
+  const url    = new URL(request.url);
+  const domain = url.searchParams.get("domain") ?? "tljmkt2.bitrix24.com.br";
+
+  let inst = await getInstallation(env.DB, domain);
+  if (!inst) return jsonResp({ error: "Instalação não encontrada" }, 404);
+
+  // Força renovação do token
+  try {
+    inst = await refreshToken(env, inst);
+  } catch(e: any) {
+    return jsonResp({ error: "Falha ao renovar token", detail: e.message });
+  }
+
+  // Checa app.info
+  const info = await callBitrix(inst.client_endpoint, "app.info", {}, inst.access_token);
+
+  // Checa eventos registrados
+  const events = await callBitrix(inst.client_endpoint, "event.get", {}, inst.access_token);
+
+  return jsonResp({ domain, access_token: inst.access_token, app_info: info, events });
+}
+
 // ─────────────────────────────────────────────
 // Entry point
 // ─────────────────────────────────────────────
@@ -434,6 +462,7 @@ export default {
 
     if (pathname === "/install" && method === "POST") return handleInstall(request, env);
     if (pathname === "/install" && (method === "GET" || method === "HEAD"))  return html(`<h2>✅ Valor por Extenso</h2><p>App instalado corretamente. Acesse pelo Bitrix24.</p>`);
+    if (pathname === "/debug"   && method === "GET")  return handleDebug(request, env);
     if (pathname === "/setup"   && (method === "GET" || method === "HEAD"))  return handleSetupGet(request, env);
     if (pathname === "/setup"   && method === "POST") return handleSetupPost(request, env);
     if (pathname === "/bitrix"  && method === "POST") return handleBitrixEvent(request, env);

@@ -473,19 +473,22 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);
+  console.log("DEAL RESP:", JSON.stringify(dealResp));
   const deal     = dealResp?.result;
-  if (!deal) return jsonResp({ error: `Deal ${dealId} não encontrado` }, 404);
+  if (!deal) return jsonResp({ error: `Deal ${dealId} não encontrado`, resp: dealResp }, 404);
 
   const opportunity = Number(deal["OPPORTUNITY"]);
   if (Number.isNaN(opportunity)) return jsonResp({ error: "OPPORTUNITY inválido" }, 400);
 
   const extenso = valorPorExtensoBR(opportunity);
+  console.log("EXTENSO:", extenso, "FIELD:", inst.field_extenso);
 
   // Atualiza o campo personalizado
-  await callBitrix(useEndpoint, "crm.deal.update", {
+  const updateResp = await callBitrix(useEndpoint, "crm.deal.update", {
     id: dealId,
     [`fields[${inst.field_extenso}]`]: extenso,
   }, useToken);
+  console.log("UPDATE RESP:", JSON.stringify(updateResp));
 
   return jsonResp({ ok: true, domain, dealId, opportunity, extenso });
 }

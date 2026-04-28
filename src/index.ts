@@ -429,17 +429,13 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   body.forEach((v, k) => { allFields[k] = v; });
   console.log("BITRIX EVENT PAYLOAD:", JSON.stringify(allFields));
 
-  const event  = (body.get("event") ?? "").toUpperCase();
+  const event          = (body.get("event") ?? "").toUpperCase();
+  const domain         = body.get("auth[domain]") ?? body.get("DOMAIN") ?? body.get("domain") ?? "";
+  const dealId         = body.get("data[FIELDS][ID]") ?? "";
+  const clientEndpoint = body.get("auth[client_endpoint]") ?? "";
+  const accessToken    = body.get("auth[access_token]") ?? "";
 
-  // O Bitrix24 pode enviar o domínio em diferentes campos
-  const domain = body.get("auth[domain]")
-    ?? body.get("DOMAIN")
-    ?? body.get("domain")
-    ?? body.get("auth_domain")
-    ?? "";
-  const dealId = body.get("data[FIELDS][ID]") ?? "";
-
-  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId);
+  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId, "ENDPOINT:", clientEndpoint);
 
   if (!["ONCRMDEALADD", "ONCRMDEALUPDATE"].includes(event)) {
     return jsonResp({ skipped: true, event });
@@ -452,11 +448,18 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // Renova token se necessário
-  inst = await refreshToken(env, inst);
+  // Usa o token e endpoint enviados pelo Bitrix24 no evento (sempre frescos)
+  // Só renova via refresh se não vieram no payload
+  const useToken    = accessToken    || (await refreshToken(env, inst)).access_token;
+  const useEndpoint = clientEndpoint || inst.client_endpoint;
+
+  // Atualiza no banco se o endpoint mudou
+  if (clientEndpoint && clientEndpoint !== inst.client_endpoint) {
+    await updateTokens(env.DB, domain, accessToken, inst.refresh_token, inst.expires_at);
+  }
 
   // Busca o negócio
-  const dealResp = await callBitrix(inst.client_endpoint, "crm.deal.get", { id: dealId }, inst.access_token);
+  const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);
   const deal     = dealResp?.result;
   if (!deal) return jsonResp({ error: `Deal ${dealId} não encontrado` }, 404);
 
@@ -466,10 +469,10 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   const extenso = valorPorExtensoBR(opportunity);
 
   // Atualiza o campo personalizado
-  await callBitrix(inst.client_endpoint, "crm.deal.update", {
+  await callBitrix(useEndpoint, "crm.deal.update", {
     id: dealId,
     [`fields[${inst.field_extenso}]`]: extenso,
-  }, inst.access_token);
+  }, useToken);
 
   return jsonResp({ ok: true, domain, dealId, opportunity, extenso });
 }

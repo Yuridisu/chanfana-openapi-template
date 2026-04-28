@@ -463,9 +463,11 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // Usa client_endpoint (funciona com CRM) e token do evento
+  // O token do evento causa 403 no client_endpoint
+  // Renova o token via refresh (que funciona com client_endpoint)
+  inst = await refreshToken(env, inst);
+  const useToken    = inst.access_token;
   const useEndpoint = clientEndpoint || inst.client_endpoint;
-  const useToken    = accessToken || inst.access_token;
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);

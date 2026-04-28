@@ -470,10 +470,14 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   const useEndpoint = inst.client_endpoint;
   console.log("USING endpoint:", useEndpoint, "token_prefix:", useToken.slice(0,8));
 
-  // Busca o negócio
-  const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);
-  console.log("DEAL RESP:", JSON.stringify(dealResp));
-  const deal     = dealResp?.result;
+  // Busca o negócio via crm.deal.list com filtro por ID
+  const dealResp = await callBitrix(useEndpoint, "crm.deal.list", {
+    "filter[ID]": dealId,
+    "select[]": "OPPORTUNITY",
+    "select[1]": "ID",
+  }, useToken);
+  console.log("DEAL RESP:", JSON.stringify(dealResp).slice(0, 200));
+  const deal = dealResp?.result?.[0];
   if (!deal) return jsonResp({ error: `Deal ${dealId} não encontrado`, resp: dealResp }, 404);
 
   const opportunity = Number(deal["OPPORTUNITY"]);

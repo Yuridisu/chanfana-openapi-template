@@ -442,9 +442,13 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   const domain         = body.get("auth[domain]") ?? body.get("DOMAIN") ?? body.get("domain") ?? "";
   const dealId         = body.get("data[FIELDS][ID]") ?? "";
   const clientEndpoint = body.get("auth[client_endpoint]") ?? "";
+  const serverEndpoint = body.get("auth[server_endpoint]") ?? "";
   const accessToken    = body.get("auth[access_token]") ?? "";
 
-  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId, "ENDPOINT:", clientEndpoint);
+  // Usa server_endpoint (oauth.bitrix.info) pois é o que aceita tokens OAuth de apps
+  const apiEndpoint    = serverEndpoint || clientEndpoint;
+
+  console.log("EVENT:", event, "DOMAIN:", domain, "DEAL_ID:", dealId, "API_ENDPOINT:", apiEndpoint);
 
   if (!["ONCRMDEALADD", "ONCRMDEALUPDATE"].includes(event)) {
     return jsonResp({ skipped: true, event });
@@ -465,7 +469,7 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   // Sempre renova o token via refresh para garantir permissões corretas
   inst = await refreshToken(env, inst);
   const useToken    = inst.access_token;
-  const useEndpoint = clientEndpoint || inst.client_endpoint;
+  const useEndpoint = apiEndpoint || inst.client_endpoint;
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);

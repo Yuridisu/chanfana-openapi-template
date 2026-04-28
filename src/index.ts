@@ -217,17 +217,30 @@ function jsonResp(obj: unknown, status = 200): Response {
 // Chamada pelo Bitrix24 ao instalar o app
 // ─────────────────────────────────────────────
 async function handleInstall(request: Request, env: Env): Promise<Response> {
-  const text = await request.text();
-  const body = new URLSearchParams(text);
+  // Bitrix24 pode enviar dados na query string ou no corpo do POST
+  const urlObj = new URL(request.url);
+  const text   = await request.text();
+  const body   = new URLSearchParams(text);
 
-  const domain          = body.get("DOMAIN")          ?? body.get("domain")          ?? "";
-  const memberId        = body.get("MEMBER_ID")        ?? body.get("member_id")        ?? "";
-  const accessToken     = body.get("AUTH_ID")          ?? body.get("access_token")     ?? "";
-  const refreshToken_   = body.get("REFRESH_ID")       ?? body.get("refresh_token")    ?? "";
-  const expiresIn       = parseInt(body.get("AUTH_EXPIRES") ?? "3600");
-  const clientEndpoint  = body.get("client_endpoint")  ?? "";
+  const get = (key: string, ...aliases: string[]): string => {
+    for (const k of [key, ...aliases]) {
+      const v = urlObj.searchParams.get(k) ?? body.get(k);
+      if (v) return v;
+    }
+    return "";
+  };
 
-  if (!domain || !accessToken || !clientEndpoint) {
+  const domain         = get("DOMAIN", "domain");
+  const memberId       = get("MEMBER_ID", "member_id");
+  const accessToken    = get("AUTH_ID", "access_token");
+  const refreshToken_  = get("REFRESH_ID", "refresh_token");
+  const expiresIn      = parseInt(get("AUTH_EXPIRES") || "3600");
+  const clientEndpoint = get("client_endpoint");
+
+  // Monta client_endpoint a partir do domínio se não vier explícito
+  const resolvedEndpoint = clientEndpoint || (domain ? `https://${domain}/rest/` : "");
+
+  if (!domain || !accessToken || !resolvedEndpoint) {
     return html(`<h2 class="error">❌ Erro na instalação</h2>
       <p>Dados incompletos recebidos do Bitrix24. Tente reinstalar o aplicativo.</p>`, 400);
   }
@@ -238,7 +251,7 @@ async function handleInstall(request: Request, env: Env): Promise<Response> {
     access_token:    accessToken,
     refresh_token:   refreshToken_,
     expires_at:      Math.floor(Date.now() / 1000) + expiresIn,
-    client_endpoint: clientEndpoint,
+    client_endpoint: resolvedEndpoint,
     field_extenso:   "UF_CRM_VALOR_EXTENSO", // padrão, cliente troca no /setup
   };
 
@@ -246,7 +259,7 @@ async function handleInstall(request: Request, env: Env): Promise<Response> {
 
   // Registra os eventos de CRM
   const handlerUrl = `${env.APP_URL}/bitrix`;
-  await registerEvents(clientEndpoint, accessToken, handlerUrl);
+  await registerEvents(resolvedEndpoint, accessToken, handlerUrl);
 
   // Redireciona para a tela de configuração
   const setupUrl = `${env.APP_URL}/setup?domain=${encodeURIComponent(domain)}`;

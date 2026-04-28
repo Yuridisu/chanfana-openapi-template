@@ -461,15 +461,9 @@ async function handleBitrixEvent(request: Request, env: Env): Promise<Response> 
   let inst = await getInstallation(env.DB, domain);
   if (!inst) return jsonResp({ error: `Instalação não encontrada para ${domain}` }, 404);
 
-  // Atualiza endpoint no banco se mudou
-  if (clientEndpoint && clientEndpoint !== inst.client_endpoint) {
-    inst.client_endpoint = clientEndpoint;
-  }
-
-  // Sempre renova o token via refresh para garantir permissões corretas
-  inst = await refreshToken(env, inst);
-  const useToken    = inst.access_token;
-  const useEndpoint = apiEndpoint || inst.client_endpoint;
+  // Usa diretamente o token e client_endpoint enviados pelo Bitrix24 no evento
+  const useToken    = accessToken || inst.access_token;
+  const useEndpoint = clientEndpoint || inst.client_endpoint;
 
   // Busca o negócio
   const dealResp = await callBitrix(useEndpoint, "crm.deal.get", { id: dealId }, useToken);

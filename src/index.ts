@@ -337,60 +337,140 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
   const saved  = url.searchParams.get("saved");
   const successMsg = saved === "1" ? `<p class="success">✅ Settings saved successfully!</p>` : "";
 
-  if (!domain) {
-    return new Response(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-      <script src="https://api.bitrix24.com/api/v1/"></script>
-      <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#f4f5f7;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}.card{background:#fff;border-radius:10px;padding:36px;max-width:520px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.1)}h2{color:#2e7d32;margin-bottom:16px}p{color:#444;line-height:1.6;margin-bottom:12px}label{display:block;margin-bottom:6px;font-weight:bold;color:#333}input[type=text]{width:100%;padding:10px 14px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:16px}button{background:#2e7d32;color:#fff;border:none;padding:11px 24px;border-radius:6px;font-size:15px;cursor:pointer}button:hover{background:#1b5e20}.hint{font-size:.82em;color:#777;margin-top:-10px;margin-bottom:16px}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.85em}td,th{padding:6px 8px;border:1px solid #ddd;text-align:left}th{background:#f0f0f0}</style>
-    </head><body><div class="card">
-      <h2>⚙️ Amount Writer — Setup</h2>
-      <p>Enter the code of the custom text field that will receive the amount written in words.</p>
-      <form id="setupForm" method="POST" action="/setup">
-        <input type="hidden" name="domain" id="domainField" value="">
-        <label for="field">Custom field code</label>
-        <input type="text" id="field" name="field_extenso" placeholder="e.g. UF_CRM_1234567890">
-        <p class="hint">Find it in CRM → Settings → Deal fields.</p>
-        <button type="submit">Save settings</button>
-      </form>
-      <br>
-      <table><tr><th>Currency</th><th>Language</th><th>Example</th></tr>
+  const tableHtml = `<table><tr><th>Currency</th><th>Language</th><th>Example</th></tr>
         <tr><td>BRL</td><td>Portuguese</td><td>Quatrocentos reais e cinquenta centavos</td></tr>
         <tr><td>USD</td><td>English</td><td>Four hundred dollars and fifty cents</td></tr>
         <tr><td>NZD</td><td>English</td><td>Four hundred New Zealand dollars and fifty cents</td></tr>
         <tr><td>EUR</td><td>English</td><td>Four hundred euros and fifty cents</td></tr>
         <tr><td>CNY</td><td>Chinese (大写)</td><td>肆佰元伍角整</td></tr>
         <tr><td>INR</td><td>English</td><td>Four hundred rupees and fifty paise</td></tr>
-      </table>
-    </div>
-    <script>BX24.init(function(){var auth=BX24.getAuth();document.getElementById('domainField').value=auth.domain||BX24.getDomain();fetch('/setup-data?domain='+encodeURIComponent(auth.domain||BX24.getDomain())).then(function(r){return r.json();}).then(function(d){if(d.field_extenso)document.getElementById('field').value=d.field_extenso;});});</script>
-    </body></html>`, { headers:{"Content-Type":"text/html;charset=utf-8"} });
+      </table>`;
+  const styles    = `*{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:Arial,sans-serif;background:#f4f5f7;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+      .card{background:#fff;border-radius:10px;padding:36px;max-width:540px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+      h2{color:#2e7d32;margin-bottom:16px}
+      p{color:#444;line-height:1.6;margin-bottom:12px}
+      label{display:block;margin-bottom:6px;font-weight:bold;color:#333}
+      select{width:100%;padding:10px 14px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-bottom:16px;background:#fff;cursor:pointer}
+      select:disabled{background:#f5f5f5;color:#999;cursor:default}
+      button{background:#2e7d32;color:#fff;border:none;padding:11px 24px;border-radius:6px;font-size:15px;cursor:pointer}
+      button:hover{background:#1b5e20}
+      button:disabled{background:#aaa;cursor:default}
+      .hint{font-size:.82em;color:#777;margin-top:-10px;margin-bottom:16px}
+      .success{color:#2e7d32;margin-top:0;margin-bottom:12px;font-weight:bold}
+      .loading{color:#888;font-size:.9em;margin-bottom:8px}
+      table{width:100%;border-collapse:collapse;margin-top:16px;font-size:.85em}
+      td,th{padding:6px 8px;border:1px solid #ddd;text-align:left}
+      th{background:#f0f0f0}
+      code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.85em}`;
+  const script    = `
+BX24.init(function() {
+  var auth   = BX24.getAuth();
+  var domain = auth.domain || BX24.getDomain();
+  document.getElementById('domainField').value = domain;
+
+  var select  = document.getElementById('fieldSelect');
+  var loading = document.getElementById('loadingMsg');
+  var btn     = document.getElementById('saveBtn');
+
+  // Load current saved value
+  var savedField = '';
+  fetch('/setup-data?domain=' + encodeURIComponent(domain))
+    .then(function(r) { return r.json(); })
+    .then(function(d) { savedField = d.field_extenso || ''; loadFields(); })
+    .catch(function() { loadFields(); });
+
+  function loadFields() {
+    BX24.callMethod('crm.deal.fields', {}, function(result) {
+      if (result.error()) {
+        loading.textContent = 'Could not load fields. Please try again.';
+        return;
+      }
+      var fields = result.data();
+      var options = [];
+      for (var key in fields) {
+        var f = fields[key];
+        // Only string (text) fields — including custom ones
+        if (f.type === 'string') {
+          options.push({ code: key, label: (f.formLabel || f.listLabel || f.title || key) + ' (' + key + ')' });
+        }
+      }
+      // Sort: custom fields first, then standard
+      options.sort(function(a, b) {
+        var aCustom = a.code.indexOf('UF_') === 0 ? 0 : 1;
+        var bCustom = b.code.indexOf('UF_') === 0 ? 0 : 1;
+        if (aCustom !== bCustom) return aCustom - bCustom;
+        return a.label.localeCompare(b.label);
+      });
+
+      loading.style.display = 'none';
+      select.disabled = false;
+      btn.disabled    = false;
+
+      // Add placeholder
+      var placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '— Select a text field —';
+      select.appendChild(placeholder);
+
+      options.forEach(function(opt) {
+        var el = document.createElement('option');
+        el.value = opt.code;
+        el.textContent = opt.label;
+        if (opt.code === savedField) el.selected = true;
+        select.appendChild(el);
+      });
+
+      // If saved field not in list, add it anyway
+      if (savedField && !options.find(function(o){ return o.code === savedField; })) {
+        var el = document.createElement('option');
+        el.value = savedField;
+        el.textContent = savedField + ' (current)';
+        el.selected = true;
+        select.insertBefore(el, select.options[1]);
+      }
+    });
   }
+});
+`;
 
-  const inst = await getInstallation(env.DB, domain);
-  if (!inst) return html(`<h2 class="error">❌ Installation not found</h2><p>Please reinstall the application in Bitrix24.</p>`);
+  // Served inside Bitrix24 iframe — use BX24.js to get domain and fields
+  const page = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Amount Writer — Setup</title>
+  <script src="https://api.bitrix24.com/api/v1/"></script>
+  <style>${styles}</style>
+</head>
+<body>
+<div class="card">
+  <h2>⚙️ Amount Writer — Setup</h2>
+  <p>Select the custom text field where the amount in words will be saved.</p>
+  ${successMsg}
+  <form id="setupForm" method="POST" action="/setup">
+    <input type="hidden" name="domain" id="domainField" value="${domain}">
+    <label for="fieldSelect">Text field for amount in words</label>
+    <p id="loadingMsg" class="loading">⏳ Loading available fields...</p>
+    <select id="fieldSelect" name="field_extenso" disabled>
+    </select>
+    <p class="hint">Only text fields are listed. Go to CRM → Settings → Deal fields to create one if needed.</p>
+    <button type="submit" id="saveBtn" disabled>Save settings</button>
+  </form>
+  <br>
+  ${tableHtml}
+  ${domain ? `<p style="margin-top:12px"><small>Domain: <code>${domain}</code></small></p>` : ""}
+</div>
+<script>
+${script}
+</script>
+</body>
+</html>`;
 
-  return html(`
-    <h2>⚙️ Amount Writer — Setup</h2>
-    <p>Enter the code of the custom text field that will receive the amount written in words.</p>
-    ${successMsg}
-    <form method="POST" action="/setup">
-      <input type="hidden" name="domain" value="${domain}">
-      <label for="field">Custom field code</label>
-      <input type="text" id="field" name="field_extenso" value="${inst.field_extenso}" placeholder="e.g. UF_CRM_1234567890">
-      <p class="hint">Find it in CRM → Settings → Deal fields.</p>
-      <button type="submit">Save settings</button>
-    </form>
-    <br>
-    <table><tr><th>Currency</th><th>Language</th><th>Example</th></tr>
-      <tr><td>BRL</td><td>Portuguese</td><td>Quatrocentos reais e cinquenta centavos</td></tr>
-      <tr><td>USD</td><td>English</td><td>Four hundred dollars and fifty cents</td></tr>
-      <tr><td>NZD</td><td>English</td><td>Four hundred New Zealand dollars and fifty cents</td></tr>
-      <tr><td>EUR</td><td>English</td><td>Four hundred euros and fifty cents</td></tr>
-      <tr><td>CNY</td><td>Chinese (大写)</td><td>肆佰元伍角整</td></tr>
-      <tr><td>INR</td><td>English</td><td>Four hundred rupees and fifty paise</td></tr>
-    </table>
-    <p><small>Domain: <code>${domain}</code></small></p>
-  `);
+  return new Response(page, { headers: { "Content-Type": "text/html;charset=utf-8" } });
 }
+
 
 // ─────────────────────────────────────────────
 // Route: POST /setup

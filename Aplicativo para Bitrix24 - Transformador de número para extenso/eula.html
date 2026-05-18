@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EULA – TLJ Apps</title>
+  <style>
+    :root {
+      --blue: #5BA4CF;
+      --blue-dark: #4a8db8;
+      --blue-light: #e8f3fb;
+      --black: #1a1a1a;
+      --white: #ffffff;
+      --bg: #f0f4f8;
+      --border: #e2e8f0;
+      --text: #2d3748;
+      --text-light: #718096;
+      --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    header {
+      background: var(--black);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 32px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-name    { font-size: 15px; font-weight: 700; color: var(--white); letter-spacing: .01em; }
+    .brand-tagline { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 1px; }
+
+    .header-divider {
+      width: 1px; height: 28px;
+      background: rgba(255,255,255,.15);
+      margin: 0 4px;
+    }
+
+    .header-label {
+      font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,.5);
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    /* ── Nav bar ─────────────────────────────────────── */
+    .nav-bar {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 32px; gap: 12px; flex-wrap: wrap;
+    }
+
+    .app-tabs { display: flex; gap: 2px; }
+
+    .app-tab {
+      display: flex; align-items: center; gap: 9px;
+      padding: 12px 18px;
+      border: none; background: transparent;
+      border-bottom: 3px solid transparent;
+      cursor: pointer; color: rgba(255,255,255,.5);
+      font-size: 13px; font-weight: 600;
+      transition: color .15s, border-color .15s, background .15s;
+      white-space: nowrap; letter-spacing: .01em;
+    }
+
+    .app-tab:hover  { color: var(--white); background: rgba(255,255,255,.06); }
+    .app-tab.active { color: var(--white); border-bottom-color: var(--blue); }
+
+    .app-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .app-icon-cnpj   { background: rgba(91,164,207,.25); }
+    .app-icon-writer { background: rgba(224,112,32,.25); }
+
+    .lang-tabs { display: flex; gap: 6px; padding: 10px 0; }
+
+    .lang-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 14px;
+      border: 1.5px solid rgba(255,255,255,.2); border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; background: transparent; color: rgba(255,255,255,.55);
+      transition: all .15s; letter-spacing: .04em;
+    }
+
+    .lang-tab:hover  { border-color: var(--blue); color: var(--white); }
+    .lang-tab.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+
+    /* ── Main ────────────────────────────────────────── */
+    main { max-width: 860px; margin: 32px auto 80px; padding: 0 24px; }
+
+    .doc-panel { display: none; }
+    .doc-panel.visible { display: block; }
+
+    /* ── Doc card ────────────────────────────────────── */
+    .doc-card {
+      background: var(--white); border-radius: 16px;
+      padding: 48px 56px;
+      box-shadow: var(--card-shadow); border: 1px solid var(--border);
+    }
+
+    .doc-header {
+      margin-bottom: 32px; padding-bottom: 24px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .app-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--blue-light); color: var(--blue-dark);
+      font-size: 11px; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    .app-badge-writer { background: #fff0e6; color: #b85e1a; }
+
+    .doc-card h1 {
+      font-size: 26px; font-weight: 800; color: var(--black);
+      line-height: 1.25; margin-bottom: 10px;
+    }
+
+    .doc-meta {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      font-size: 12.5px; color: var(--text-light);
+    }
+
+    .doc-meta strong { color: var(--text); }
+
+    /* ── Content ─────────────────────────────────────── */
+    .doc-body { counter-reset: section; }
+
+    .doc-card h2 {
+      font-size: 14px; font-weight: 700; color: var(--black);
+      margin-top: 32px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .doc-card h2::before {
+      content: counter(section);
+      counter-increment: section;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px;
+      background: var(--blue); color: var(--white);
+      border-radius: 50%; font-size: 11px; font-weight: 800; flex-shrink: 0;
+    }
+
+    .doc-card p   { font-size: 14px; color: #4a5568; margin-bottom: 10px; }
+    .doc-card p:last-child { margin-bottom: 0; }
+
+    .doc-card ul  { padding-left: 0; list-style: none; margin-bottom: 10px; }
+
+    .doc-card ul li {
+      font-size: 14px; color: #4a5568;
+      padding: 5px 0 5px 20px; position: relative;
+    }
+
+    .doc-card ul li::before {
+      content: ''; position: absolute; left: 0; top: 13px;
+      width: 6px; height: 6px; border-radius: 50%; background: var(--blue);
+    }
+
+    .doc-card a {
+      color: var(--blue-dark); text-decoration: none; font-weight: 500;
+      border-bottom: 1px solid rgba(74,141,184,.3); transition: border-color .15s;
+    }
+
+    .doc-card a:hover { border-bottom-color: var(--blue-dark); }
+
+    /* ── Notice box ─────────────────────────────────── */
+    .notice {
+      background: var(--blue-light); border: 1.5px solid #a8d5f5;
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 13.5px; color: #1c5f92; margin: 24px 0 8px; line-height: 1.6;
+    }
+
+    .notice strong { color: #154e7a; }
+
+    .notice-warning {
+      background: #fff8ec; border: 1.5px solid #f5c97a;
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 13px; color: #92600a; margin: 0 0 24px; line-height: 1.6;
+    }
+
+    /* ── Subscription box ───────────────────────────── */
+    .sub-box {
+      background: #f7fbff; border: 1.5px solid var(--blue);
+      border-radius: 10px; padding: 16px 20px; margin: 14px 0;
+    }
+
+    .sub-box-title {
+      font-size: 12px; font-weight: 700; color: var(--blue-dark);
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px;
+    }
+
+    .sub-box p { font-size: 13.5px; color: #2c5282; margin-bottom: 6px; }
+    .sub-box p:last-child { margin-bottom: 0; }
+
+    /* ── Contact card ────────────────────────────────── */
+    .contact-card {
+      margin-top: 32px; padding-top: 24px;
+      border-top: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+
+    .contact-logo {
+      width: 40px; height: 40px; background: var(--black);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0;
+    }
+
+    .contact-info  { flex: 1; min-width: 180px; }
+    .contact-name  { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 2px; }
+    .contact-links { font-size: 13px; color: var(--text-light); }
+    .contact-links a { margin-right: 12px; }
+
+    /* ── Footer ─────────────────────────────────────── */
+    footer { text-align: center; padding: 24px; font-size: 12px; color: var(--text-light); }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 640px) {
+      .header-top { padding: 12px 16px; }
+      .nav-bar { padding: 0 16px; }
+      .doc-card { padding: 28px 22px; }
+      .app-tab .label { display: none; }
+      main { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a href="https://tlj.net.br" class="brand-logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+          <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">TLJ Apps</div>
+        <div class="brand-tagline">tlj.net.br</div>
+      </div>
+    </a>
+    <div class="header-divider"></div>
+    <span class="header-label">End User License Agreement</span>
+  </div>
+
+  <div class="nav-bar">
+    <div class="app-tabs">
+      <button class="app-tab active" id="apptab-cnpj" onclick="setApp('cnpj')">
+        <div class="app-icon app-icon-cnpj">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5BA4CF" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/>
+          </svg>
+        </div>
+        <span class="label">Consulta de CNPJ</span>
+      </button>
+      <button class="app-tab" id="apptab-writer" onclick="setApp('writer')">
+        <div class="app-icon app-icon-writer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e07020" stroke-width="2.5" stroke-linecap="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <span class="label">Amount Writer</span>
+      </button>
+    </div>
+
+    <div class="lang-tabs">
+      <button class="lang-tab active" id="langtab-pt" onclick="setLang('pt')">🇧🇷 PT-BR</button>
+      <button class="lang-tab" id="langtab-en" onclick="setLang('en')">🇺🇸 EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- CNPJ · PT                             -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel visible" id="panel-cnpj-pt">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consulta de CNPJ para Bitrix24
+        </div>
+        <h1>Contrato de Licença de Usuário Final</h1>
+        <div class="doc-meta">
+          <span>Desenvolvedor: <strong>TLJ Apps</strong></span>
+          <span>Última atualização: <strong>maio de 2025</strong></span>
+        </div>
+      </div>
+
+      <div class="notice-warning">
+        Ao instalar ou utilizar este Aplicativo, você declara ter lido, compreendido e aceitado os termos deste Contrato. Se não concordar, não instale nem utilize o Aplicativo.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Concessão de Licença</h2>
+        <p>A TLJ Apps ("Desenvolvedor") concede a você uma licença limitada, não exclusiva, intransferível e revogável para instalar e utilizar o aplicativo <strong>Consulta de CNPJ para Bitrix24</strong> ("Aplicativo") exclusivamente para suas finalidades comerciais internas dentro da plataforma Bitrix24. Esta licença não inclui o direito de sublicenciar, ceder ou transferir o Aplicativo a terceiros.</p>
+
+        <h2>Descrição do Aplicativo</h2>
+        <p>O Aplicativo integra-se ao CRM Bitrix24 para consultar o banco de dados público da Receita Federal do Brasil via API ReceitaWS. Ao salvar um cadastro de empresa com CNPJ preenchido, o Aplicativo recupera dados públicos — razão social, endereço, CNAE, quadro societário e situação cadastral — e preenche automaticamente os campos correspondentes no registro de empresa do Bitrix24.</p>
+
+        <h2>Restrições de Uso</h2>
+        <p>Você não pode:</p>
+        <ul>
+          <li>Copiar, modificar, distribuir, vender, sublicenciar ou alugar qualquer parte do Aplicativo;</li>
+          <li>Fazer engenharia reversa, descompilar ou tentar extrair o código-fonte do Aplicativo, salvo quando expressamente permitido por lei;</li>
+          <li>Utilizar o Aplicativo para qualquer finalidade ilegal ou em violação aos Termos de Serviço do Bitrix24;</li>
+          <li>Remover, ocultar ou alterar quaisquer avisos de direitos autorais, marcas registradas ou outros avisos de propriedade intelectual presentes no Aplicativo;</li>
+          <li>Utilizar o Aplicativo de forma que sobrecarregue indevidamente a infraestrutura da API ReceitaWS ou viole seus termos de uso.</li>
+        </ul>
+
+        <h2>Dados e Privacidade</h2>
+        <p>O Aplicativo não coleta, armazena nem transmite dados pessoais dos usuários finais. Ele processa apenas o número de CNPJ inserido no cadastro de empresa e recupera dados públicos da Receita Federal. Nenhum dado é persistido nos servidores do Desenvolvedor. Para mais detalhes, consulte nossa <a href="privacy-policy.html">Política de Privacidade</a>.</p>
+
+        <h2>Serviços de Terceiros</h2>
+        <p>O Aplicativo utiliza a API pública <strong>ReceitaWS</strong> (<a href="https://receitaws.com.br" target="_blank">receitaws.com.br</a>) para recuperar dados de empresas. O Desenvolvedor não se responsabiliza pela disponibilidade, precisão, completude ou atualidade dos dados fornecidos pela ReceitaWS ou pela Receita Federal do Brasil. O uso contínuo desta API está sujeito aos termos e limites de taxa da ReceitaWS.</p>
+
+        <h2>Propriedade Intelectual</h2>
+        <p>O Aplicativo e todos os seus componentes, incluindo código-fonte, design e documentação, são de propriedade exclusiva da TLJ Apps e protegidos pelas leis de direitos autorais aplicáveis. Este Contrato não transfere qualquer direito de propriedade sobre o Aplicativo. "TLJ Apps" é marca da TLJ Apps e não pode ser utilizada sem autorização prévia por escrito.</p>
+
+        <h2>Isenção de Garantias</h2>
+        <p>O Aplicativo é fornecido "no estado em que se encontra" e "conforme disponível", sem garantias de qualquer natureza, expressas ou implícitas, incluindo, mas não se limitando a, garantias de comerciabilidade, adequação a uma finalidade específica ou não violação. O Desenvolvedor não garante que o Aplicativo será ininterrupto, livre de erros ou que todos os defeitos serão corrigidos. Os dados obtidos da Receita Federal são fornecidos apenas para fins informativos e podem não refletir a situação cadastral mais recente.</p>
+
+        <h2>Limitação de Responsabilidade</h2>
+        <p>Na máxima extensão permitida pela legislação aplicável, a TLJ Apps não será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo perda de dados, lucros cessantes ou interrupção de negócios, decorrentes do uso ou da impossibilidade de uso do Aplicativo, mesmo que o Desenvolvedor tenha sido avisado da possibilidade de tais danos.</p>
+
+        <h2>Rescisão</h2>
+        <p>Este Contrato vigora até ser rescindido. Seus direitos serão encerrados automaticamente, sem aviso prévio, caso você descumpra qualquer termo deste Contrato. Após a rescisão, você deverá cessar todo o uso do Aplicativo e desinstalá-lo do seu portal Bitrix24. As cláusulas que, pela sua natureza, devam sobreviver à rescisão (incluindo propriedade intelectual, isenção de garantias e limitação de responsabilidade) permanecerão em vigor.</p>
+
+        <h2>Alterações ao Contrato</h2>
+        <p>O Desenvolvedor reserva-se o direito de modificar este Contrato a qualquer momento. Alterações materiais serão comunicadas por meio do marketplace do Bitrix24 ou atualização da data acima. O uso continuado do Aplicativo após tais alterações constitui aceitação dos novos termos.</p>
+
+        <h2>Lei Aplicável e Foro</h2>
+        <p>Este Contrato será regido e interpretado de acordo com as leis da República Federativa do Brasil. Quaisquer disputas decorrentes deste Contrato ficam sujeitas à jurisdição exclusiva do Foro Central da Comarca de São Paulo, Estado de São Paulo, Brasil, renunciando as partes a qualquer outro, por mais privilegiado que seja.</p>
+
+        <h2>Contato</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- CNPJ · EN                             -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-cnpj-en">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consulta de CNPJ for Bitrix24
+        </div>
+        <h1>End User License Agreement</h1>
+        <div class="doc-meta">
+          <span>Developer: <strong>TLJ Apps</strong></span>
+          <span>Last updated: <strong>May 2025</strong></span>
+        </div>
+      </div>
+
+      <div class="notice-warning">
+        By installing or using this Application, you confirm that you have read, understood, and agreed to the terms of this Agreement. If you do not agree, do not install or use the Application.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Grant of License</h2>
+        <p>TLJ Apps ("Developer") grants you a limited, non-exclusive, non-transferable, and revocable license to install and use the <strong>Consulta de CNPJ for Bitrix24</strong> application ("Application") solely for your internal business purposes within the Bitrix24 platform. This license does not include the right to sublicense, assign, or transfer the Application to any third party.</p>
+
+        <h2>Description of the Application</h2>
+        <p>The Application integrates with your Bitrix24 CRM to query the Brazilian Federal Revenue Service (Receita Federal) public database via the ReceitaWS API. When a company record with a CNPJ number is saved, the Application retrieves publicly available company data — including company name, address, activity codes (CNAE), partners, and registration status — and automatically populates the corresponding fields in the Bitrix24 company record.</p>
+
+        <h2>Use Restrictions</h2>
+        <p>You may not:</p>
+        <ul>
+          <li>Copy, modify, distribute, sell, sublicense, or rent any part of the Application;</li>
+          <li>Reverse-engineer, decompile, or attempt to extract the source code of the Application, except as expressly permitted by law;</li>
+          <li>Use the Application for any unlawful purpose or in violation of Bitrix24's Terms of Service;</li>
+          <li>Remove, obscure, or alter any copyright, trademark, or other proprietary notices in the Application;</li>
+          <li>Use the Application in a way that unduly burdens the ReceitaWS API infrastructure or violates its terms of use.</li>
+        </ul>
+
+        <h2>Data and Privacy</h2>
+        <p>The Application does not collect, store, or transmit any personal data about end users. It only processes CNPJ numbers entered in company records and retrieves publicly available data from the Federal Revenue Service. No data is persisted on the Developer's servers. For more information, please see our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+
+        <h2>Third-Party Services</h2>
+        <p>The Application uses the <strong>ReceitaWS</strong> public API (<a href="https://receitaws.com.br" target="_blank">receitaws.com.br</a>) to retrieve company data. The Developer is not responsible for the availability, accuracy, completeness, or timeliness of data provided by ReceitaWS or the Brazilian Federal Revenue Service. Continued use of this API is subject to ReceitaWS's own terms and rate limits.</p>
+
+        <h2>Intellectual Property</h2>
+        <p>The Application and all its components, including source code, design, and documentation, are the exclusive property of TLJ Apps and are protected by applicable copyright laws. This Agreement does not transfer any ownership rights in the Application. "TLJ Apps" is a trademark of TLJ Apps and may not be used without prior written authorization.</p>
+
+        <h2>Disclaimer of Warranties</h2>
+        <p>The Application is provided "as is" and "as available," without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. The Developer does not warrant that the Application will be uninterrupted, error-free, or that all defects will be corrected. Data obtained from the Federal Revenue Service is provided for informational purposes only and may not reflect the most current registration status.</p>
+
+        <h2>Limitation of Liability</h2>
+        <p>To the maximum extent permitted by applicable law, TLJ Apps shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of data, lost profits, or business interruption, arising from the use or inability to use the Application, even if the Developer has been advised of the possibility of such damages.</p>
+
+        <h2>Termination</h2>
+        <p>This Agreement remains in effect until terminated. Your rights will terminate automatically, without notice, if you breach any term of this Agreement. Upon termination, you must stop all use of the Application and uninstall it from your Bitrix24 portal. Provisions that by their nature should survive termination — including intellectual property, disclaimer of warranties, and limitation of liability — will remain in effect.</p>
+
+        <h2>Changes to This Agreement</h2>
+        <p>The Developer reserves the right to modify this Agreement at any time. Material changes will be communicated through the Bitrix24 marketplace or by updating the date above. Continued use of the Application after such changes constitutes acceptance of the new terms.</p>
+
+        <h2>Governing Law</h2>
+        <p>This Agreement shall be governed by and construed in accordance with the laws of the Federative Republic of Brazil. Any disputes arising from this Agreement shall be subject to the exclusive jurisdiction of the courts of the City of São Paulo, State of São Paulo, Brazil.</p>
+
+        <h2>Contact</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WRITER · PT                           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-writer-pt">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge app-badge-writer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Amount Writer para Bitrix24
+        </div>
+        <h1>Contrato de Licença de Usuário Final</h1>
+        <div class="doc-meta">
+          <span>Desenvolvedor: <strong>TLJ Apps</strong></span>
+          <span>Última atualização: <strong>abril de 2026</strong></span>
+        </div>
+      </div>
+
+      <div class="notice-warning">
+        Ao instalar ou utilizar este Aplicativo, você declara ter lido, compreendido e aceitado os termos deste Contrato. Se não concordar, não instale nem utilize o Aplicativo.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Concessão de Licença</h2>
+        <p>A TLJ Apps ("Desenvolvedor") concede a você uma licença limitada, não exclusiva, intransferível e revogável para instalar e utilizar o aplicativo <strong>Amount Writer para Bitrix24</strong> ("Aplicativo") exclusivamente para suas finalidades comerciais internas dentro da plataforma Bitrix24. O acesso pleno às funcionalidades do Aplicativo está condicionado à existência de uma assinatura ativa ou de um período de avaliação válido.</p>
+
+        <h2>Descrição do Aplicativo</h2>
+        <p>O Aplicativo integra-se ao CRM Bitrix24 e converte automaticamente valores monetários de negócios em texto por extenso, gravando o resultado em campos de texto configurados pelo usuário. Suporta múltiplos idiomas (Português, Inglês e Chinês) e múltiplos campos de mapeamento, configuráveis na tela de configuração do Aplicativo.</p>
+
+        <h2>Assinatura e Pagamento</h2>
+        <div class="sub-box">
+          <div class="sub-box-title">Termos de Assinatura</div>
+          <p><strong>Período de avaliação:</strong> Após a instalação, você terá 7 (sete) dias de uso gratuito para avaliar o Aplicativo sem qualquer cobrança.</p>
+          <p><strong>Plano pago:</strong> Após o período de avaliação, o acesso às funcionalidades requer uma assinatura mensal no valor de <strong>US$ 5,00/mês</strong>, cobrada automaticamente via Stripe.</p>
+          <p><strong>Renovação automática:</strong> A assinatura é renovada automaticamente ao final de cada período. Você pode cancelar a qualquer momento; o acesso permanece ativo até o fim do período já pago.</p>
+          <p><strong>Pagamentos:</strong> Processados com segurança pelo Stripe (<a href="https://stripe.com" target="_blank">stripe.com</a>), sujeito aos Termos de Serviço do Stripe. A TLJ Apps não armazena dados de cartão de crédito.</p>
+          <p><strong>Reembolso:</strong> Não oferecemos reembolso por períodos parciais já utilizados, exceto quando exigido por lei aplicável.</p>
+        </div>
+
+        <h2>Restrições de Uso</h2>
+        <p>Você não pode:</p>
+        <ul>
+          <li>Copiar, modificar, distribuir, vender, sublicenciar ou alugar qualquer parte do Aplicativo;</li>
+          <li>Fazer engenharia reversa, descompilar ou tentar extrair o código-fonte do Aplicativo, salvo quando expressamente permitido por lei;</li>
+          <li>Compartilhar credenciais de acesso ou tokens de autenticação com terceiros não autorizados;</li>
+          <li>Utilizar o Aplicativo para qualquer finalidade ilegal ou em violação aos Termos de Serviço do Bitrix24;</li>
+          <li>Remover, ocultar ou alterar quaisquer avisos de propriedade intelectual presentes no Aplicativo;</li>
+          <li>Tentar contornar os mecanismos de controle de assinatura ou acesso do Aplicativo.</li>
+        </ul>
+
+        <h2>Dados e Privacidade</h2>
+        <p>O Aplicativo armazena exclusivamente os dados técnicos necessários para seu funcionamento: domínio do portal Bitrix24, tokens de autenticação OAuth e configurações de campos. Nenhum dado de negócio, cliente ou informação financeira é retido nos servidores do Desenvolvedor. Para mais detalhes, consulte nossa <a href="privacy-policy.html">Política de Privacidade</a>.</p>
+
+        <h2>Serviços de Terceiros</h2>
+        <p>O Aplicativo se comunica exclusivamente com a <strong>API REST do Bitrix24</strong> (bitrix24.com, oauth.bitrix.info) e com o <strong>Stripe</strong> (stripe.com) para gestão de assinaturas. O uso desses serviços está sujeito aos respectivos Termos de Serviço de cada plataforma.</p>
+
+        <h2>Propriedade Intelectual</h2>
+        <p>O Aplicativo e todos os seus componentes — incluindo código, design, algoritmos de conversão e documentação — são de propriedade exclusiva da TLJ Apps, protegidos pelas leis de direitos autorais aplicáveis. Este Contrato não transfere nenhum direito de propriedade sobre o Aplicativo ou seus componentes.</p>
+
+        <h2>Isenção de Garantias</h2>
+        <p>O Aplicativo é fornecido "no estado em que se encontra", sem garantias de qualquer natureza, expressas ou implícitas. O Desenvolvedor não garante que o Aplicativo será ininterrupto, livre de erros, ou que todos os defeitos serão corrigidos. A precisão das conversões por extenso depende dos dados de entrada fornecidos pelo CRM.</p>
+
+        <h2>Limitação de Responsabilidade</h2>
+        <p>Na máxima extensão permitida pela legislação aplicável, a TLJ Apps não será responsável por quaisquer danos indiretos, incidentais, especiais ou consequenciais, incluindo erros em documentos gerados com base nas conversões do Aplicativo, perda de dados ou interrupção de negócios. A responsabilidade total do Desenvolvedor para com você, em qualquer hipótese, não excederá o valor pago nos últimos 3 (três) meses de assinatura.</p>
+
+        <h2>Rescisão</h2>
+        <p>Este Contrato vigora até ser rescindido. Seus direitos serão encerrados automaticamente, sem aviso prévio, caso você descumpra qualquer termo. O cancelamento da assinatura encerra a licença ao término do período pago vigente. Após a rescisão, você deverá cessar todo o uso do Aplicativo e desinstalá-lo do seu portal. As cláusulas relativas a propriedade intelectual, isenção de garantias e limitação de responsabilidade sobrevivem à rescisão.</p>
+
+        <h2>Alterações ao Contrato</h2>
+        <p>O Desenvolvedor reserva-se o direito de modificar este Contrato a qualquer momento. Alterações materiais serão comunicadas por meio do marketplace do Bitrix24 ou atualização da data acima. O uso continuado do Aplicativo após a data efetiva das alterações constitui aceitação dos novos termos.</p>
+
+        <h2>Lei Aplicável e Foro</h2>
+        <p>Este Contrato será regido pelas leis da República Federativa do Brasil. Quaisquer disputas ficam sujeitas à jurisdição exclusiva do Foro Central da Comarca de São Paulo, Estado de São Paulo, Brasil.</p>
+
+        <h2>Contato</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WRITER · EN                           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-writer-en">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge app-badge-writer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Amount Writer for Bitrix24
+        </div>
+        <h1>End User License Agreement</h1>
+        <div class="doc-meta">
+          <span>Developer: <strong>TLJ Apps</strong></span>
+          <span>Last updated: <strong>April 2026</strong></span>
+        </div>
+      </div>
+
+      <div class="notice-warning">
+        By installing or using this Application, you confirm that you have read, understood, and agreed to the terms of this Agreement. If you do not agree, do not install or use the Application.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Grant of License</h2>
+        <p>TLJ Apps ("Developer") grants you a limited, non-exclusive, non-transferable, and revocable license to install and use the <strong>Amount Writer for Bitrix24</strong> application ("Application") solely for your internal business purposes within the Bitrix24 platform. Full access to the Application's features is contingent on having an active subscription or a valid trial period.</p>
+
+        <h2>Description of the Application</h2>
+        <p>The Application integrates with the Bitrix24 CRM and automatically converts monetary values from deals into written-word form, writing the result into text fields configured by the user. It supports multiple languages (Portuguese, English, and Chinese) and multiple field mappings, configurable in the Application's settings screen.</p>
+
+        <h2>Subscription and Payment</h2>
+        <div class="sub-box">
+          <div class="sub-box-title">Subscription Terms</div>
+          <p><strong>Free trial:</strong> After installation, you will have 7 (seven) days of free access to evaluate the Application at no charge.</p>
+          <p><strong>Paid plan:</strong> After the trial period, access to the Application's features requires a monthly subscription at <strong>USD 5.00/month</strong>, charged automatically via Stripe.</p>
+          <p><strong>Auto-renewal:</strong> Subscriptions renew automatically at the end of each billing period. You may cancel at any time; access remains active until the end of the period already paid for.</p>
+          <p><strong>Payments:</strong> Processed securely by Stripe (<a href="https://stripe.com" target="_blank">stripe.com</a>), subject to Stripe's Terms of Service. TLJ Apps does not store credit card data.</p>
+          <p><strong>Refunds:</strong> We do not offer refunds for partial periods already used, except where required by applicable law.</p>
+        </div>
+
+        <h2>Use Restrictions</h2>
+        <p>You may not:</p>
+        <ul>
+          <li>Copy, modify, distribute, sell, sublicense, or rent any part of the Application;</li>
+          <li>Reverse-engineer, decompile, or attempt to extract the source code of the Application, except as expressly permitted by law;</li>
+          <li>Share access credentials or authentication tokens with unauthorized third parties;</li>
+          <li>Use the Application for any unlawful purpose or in violation of Bitrix24's Terms of Service;</li>
+          <li>Remove, obscure, or alter any intellectual property notices in the Application;</li>
+          <li>Attempt to circumvent the Application's subscription or access control mechanisms.</li>
+        </ul>
+
+        <h2>Data and Privacy</h2>
+        <p>The Application stores only the technical data necessary for its operation: your Bitrix24 portal domain, OAuth authentication tokens, and field configuration settings. No deal data, customer information, or financial data is retained on the Developer's servers. For more information, please see our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+
+        <h2>Third-Party Services</h2>
+        <p>The Application communicates exclusively with the <strong>Bitrix24 REST API</strong> (bitrix24.com, oauth.bitrix.info) and <strong>Stripe</strong> (stripe.com) for subscription management. Use of these services is subject to their respective Terms of Service.</p>
+
+        <h2>Intellectual Property</h2>
+        <p>The Application and all its components — including code, design, conversion algorithms, and documentation — are the exclusive property of TLJ Apps, protected by applicable copyright laws. This Agreement does not transfer any ownership rights in the Application or its components.</p>
+
+        <h2>Disclaimer of Warranties</h2>
+        <p>The Application is provided "as is," without warranties of any kind, express or implied. The Developer does not warrant that the Application will be uninterrupted, error-free, or that all defects will be corrected. The accuracy of written-word conversions depends on the input data provided by the CRM.</p>
+
+        <h2>Limitation of Liability</h2>
+        <p>To the maximum extent permitted by applicable law, TLJ Apps shall not be liable for any indirect, incidental, special, or consequential damages, including errors in documents generated based on the Application's conversions, loss of data, or business interruption. The Developer's total liability to you, under any circumstance, shall not exceed the amount paid by you in the last 3 (three) months of subscription.</p>
+
+        <h2>Termination</h2>
+        <p>This Agreement remains in effect until terminated. Your rights will terminate automatically, without notice, if you breach any term. Cancelling your subscription ends the license at the expiry of the current paid period. Upon termination, you must stop all use of the Application and uninstall it from your portal. Provisions relating to intellectual property, disclaimer of warranties, and limitation of liability survive termination.</p>
+
+        <h2>Changes to This Agreement</h2>
+        <p>The Developer reserves the right to modify this Agreement at any time. Material changes will be communicated through the Bitrix24 marketplace or by updating the date above. Continued use of the Application after the effective date of any changes constitutes acceptance of the new terms.</p>
+
+        <h2>Governing Law</h2>
+        <p>This Agreement shall be governed by the laws of the Federative Republic of Brazil. Any disputes arising from this Agreement shall be subject to the exclusive jurisdiction of the courts of the City of São Paulo, State of São Paulo, Brazil.</p>
+
+        <h2>Contact</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  &copy; 2026 TLJ Apps &nbsp;&middot;&nbsp; <a href="https://tlj.net.br" style="color:inherit">tlj.net.br</a>
+</footer>
+
+<script>
+  var state = { app: 'cnpj', lang: 'pt' };
+
+  function render() {
+    document.querySelectorAll('.doc-panel').forEach(function(el){ el.classList.remove('visible'); });
+    var panel = document.getElementById('panel-' + state.app + '-' + state.lang);
+    if (panel) panel.classList.add('visible');
+    ['cnpj','writer'].forEach(function(a){
+      document.getElementById('apptab-' + a).classList.toggle('active', state.app === a);
+    });
+    ['pt','en'].forEach(function(l){
+      document.getElementById('langtab-' + l).classList.toggle('active', state.lang === l);
+    });
+    document.documentElement.lang = state.lang === 'pt' ? 'pt-BR' : 'en';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function setApp(app)   { state.app  = app;  render(); }
+  function setLang(lang) { state.lang = lang; render(); }
+</script>
+</body>
+</html>

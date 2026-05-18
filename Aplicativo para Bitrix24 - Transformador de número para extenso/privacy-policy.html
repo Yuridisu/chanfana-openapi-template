@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy – TLJ Apps</title>
+  <style>
+    :root {
+      --blue: #5BA4CF;
+      --blue-dark: #4a8db8;
+      --blue-light: #e8f3fb;
+      --black: #1a1a1a;
+      --white: #ffffff;
+      --bg: #f0f4f8;
+      --border: #e2e8f0;
+      --text: #2d3748;
+      --text-light: #718096;
+      --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    header {
+      background: var(--black);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 32px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-mark svg { display: block; }
+
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: .01em;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: rgba(255,255,255,.45);
+      margin-top: 1px;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,.15);
+      margin: 0 4px;
+    }
+
+    .header-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,.5);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Nav bar ─────────────────────────────────────── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .app-tabs {
+      display: flex;
+      gap: 2px;
+    }
+
+    .app-tab {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      color: rgba(255,255,255,.5);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 0;
+      transition: color .15s, border-color .15s, background .15s;
+      white-space: nowrap;
+      letter-spacing: .01em;
+    }
+
+    .app-tab:hover {
+      color: var(--white);
+      background: rgba(255,255,255,.06);
+    }
+
+    .app-tab.active {
+      color: var(--white);
+      border-bottom-color: var(--blue);
+    }
+
+    .app-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .app-icon-cnpj   { background: rgba(91,164,207,.25); }
+    .app-icon-writer { background: rgba(224,112,32,.25); }
+
+    .lang-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 10px 0;
+    }
+
+    .lang-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(255,255,255,.55);
+      transition: all .15s;
+      letter-spacing: .04em;
+    }
+
+    .lang-tab:hover {
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    .lang-tab.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    /* ── Main ────────────────────────────────────────── */
+    main {
+      max-width: 860px;
+      margin: 32px auto 80px;
+      padding: 0 24px;
+    }
+
+    .doc-panel { display: none; }
+    .doc-panel.visible { display: block; }
+
+    /* ── Doc card ────────────────────────────────────── */
+    .doc-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px 56px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+    }
+
+    .doc-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .app-badge-writer {
+      background: #fff0e6;
+      color: #b85e1a;
+    }
+
+    .doc-card h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--black);
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12.5px;
+      color: var(--text-light);
+    }
+
+    .doc-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .doc-meta strong { color: var(--text); }
+
+    /* ── Content ─────────────────────────────────────── */
+    .doc-body { counter-reset: section; }
+
+    .doc-card h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--black);
+      margin-top: 32px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .doc-card h2::before {
+      content: counter(section);
+      counter-increment: section;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: var(--blue);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .doc-card p {
+      font-size: 14px;
+      color: #4a5568;
+      margin-bottom: 10px;
+    }
+
+    .doc-card p:last-child { margin-bottom: 0; }
+
+    .doc-card ul {
+      padding-left: 0;
+      list-style: none;
+      margin-bottom: 10px;
+    }
+
+    .doc-card ul li {
+      font-size: 14px;
+      color: #4a5568;
+      padding: 5px 0 5px 20px;
+      position: relative;
+    }
+
+    .doc-card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .doc-card a {
+      color: var(--blue-dark);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(74,141,184,.3);
+      transition: border-color .15s;
+    }
+
+    .doc-card a:hover { border-bottom-color: var(--blue-dark); }
+
+    .doc-card em {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    /* ── Notice box ─────────────────────────────────── */
+    .notice {
+      background: var(--blue-light);
+      border: 1.5px solid #a8d5f5;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #1c5f92;
+      margin: 24px 0 8px;
+      line-height: 1.6;
+    }
+
+    .notice strong { color: #154e7a; }
+
+    /* ── Table ──────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 14px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    td, th {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    th {
+      background: #f7f9fc;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-light);
+    }
+
+    td:first-child { font-weight: 600; color: var(--text); }
+    td:last-child  { color: #4a5568; }
+
+    /* ── Contact card ────────────────────────────────── */
+    .contact-card {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .contact-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--black);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .contact-info { flex: 1; min-width: 180px; }
+    .contact-name { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 2px; }
+    .contact-links { font-size: 13px; color: var(--text-light); }
+    .contact-links a { margin-right: 12px; }
+
+    /* ── Footer ─────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 640px) {
+      .header-top { padding: 12px 16px; }
+      .nav-bar { padding: 0 16px; }
+      .doc-card { padding: 28px 22px; }
+      .app-tab .label { display: none; }
+      main { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a href="https://tlj.net.br" class="brand-logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+          <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">TLJ Apps</div>
+        <div class="brand-tagline">tlj.net.br</div>
+      </div>
+    </a>
+    <div class="header-divider"></div>
+    <span class="header-label">Privacy Policy</span>
+  </div>
+
+  <div class="nav-bar">
+    <div class="app-tabs">
+      <button class="app-tab active" id="apptab-cnpj" onclick="setApp('cnpj')">
+        <div class="app-icon app-icon-cnpj">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5BA4CF" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/>
+          </svg>
+        </div>
+        <span class="label">Consulta de CNPJ</span>
+      </button>
+      <button class="app-tab" id="apptab-writer" onclick="setApp('writer')">
+        <div class="app-icon app-icon-writer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e07020" stroke-width="2.5" stroke-linecap="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <span class="label">Amount Writer</span>
+      </button>
+    </div>
+
+    <div class="lang-tabs">
+      <button class="lang-tab active" id="langtab-pt" onclick="setLang('pt')">🇧🇷 PT-BR</button>
+      <button class="lang-tab" id="langtab-en" onclick="setLang('en')">🇺🇸 EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- CNPJ · PT                             -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel visible" id="panel-cnpj-pt">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consulta de CNPJ para Bitrix24
+        </div>
+        <h1>Política de Privacidade</h1>
+        <div class="doc-meta">
+          <span>Desenvolvedor: <strong>TLJ Apps</strong></span>
+          <span>Última atualização: <strong>maio de 2025</strong></span>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>Resumo:</strong> Este aplicativo não coleta, armazena nem vende dados pessoais. Funciona como uma ponte entre o Bitrix24 e o banco de dados público da Receita Federal. Todo o processamento ocorre em tempo real.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Visão Geral</h2>
+        <p>Esta Política descreve como a TLJ Apps trata informações relacionadas ao aplicativo <strong>Consulta de CNPJ</strong> para Bitrix24. O Aplicativo atua exclusivamente como uma ponte entre o seu CRM e o banco de dados público da Receita Federal do Brasil, sem coletar ou reter dados dos usuários.</p>
+
+        <h2>Dados Processados pelo Aplicativo</h2>
+        <p>Durante o uso do Aplicativo, os seguintes dados são processados em tempo real:</p>
+        <ul>
+          <li><strong>Número de CNPJ:</strong> enviado à API pública ReceitaWS para consultar os dados da empresa junto à Receita Federal.</li>
+          <li><strong>Token de autenticação do Bitrix24:</strong> utilizado exclusivamente para gravar os dados retornados no cadastro de empresa do seu portal. Os tokens são usados em memória e nunca armazenados em nossos servidores.</li>
+          <li><strong>Dados públicos de empresa:</strong> informações de registro empresarial retornadas pela Receita Federal (razão social, CNAE, endereço, sócios etc.) e gravadas no seu Bitrix24.</li>
+        </ul>
+
+        <h2>O Que Não Coletamos</h2>
+        <ul>
+          <li>Não coletamos nem armazenamos dados pessoais sobre seus colaboradores ou usuários finais.</li>
+          <li>Não persistimos números de CNPJ, tokens de autenticação ou dados de empresa em nossos servidores.</li>
+          <li>Não utilizamos cookies, pixels de rastreamento ou qualquer tecnologia de monitoramento.</li>
+          <li>Não compartilhamos informações com terceiros para fins publicitários ou de marketing.</li>
+        </ul>
+
+        <h2>Serviços de Terceiros</h2>
+        <p>O Aplicativo consulta a API pública <strong>ReceitaWS</strong> (<a href="https://receitaws.com.br" target="_blank">receitaws.com.br</a>), que obtém dados do banco oficial da Receita Federal do Brasil. O ReceitaWS está sujeito à sua própria política de privacidade. Todos os dados retornados são originários do cadastro público federal e não constituem dados pessoais sensíveis.</p>
+
+        <h2>Retenção de Dados</h2>
+        <p>O Aplicativo não retém nenhum dado. Todo o processamento ocorre em tempo real e nada é persistido em nossa infraestrutura após a conclusão da consulta.</p>
+
+        <h2>Segurança</h2>
+        <p>Toda a comunicação entre o Aplicativo e serviços externos é realizada exclusivamente via HTTPS com TLS. Os tokens de autenticação são utilizados de forma transitória e descartados imediatamente após cada operação.</p>
+
+        <h2>Seus Direitos (LGPD)</h2>
+        <p>De acordo com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), como não armazenamos nenhum dado pessoal, não há informações mantidas por nós que possam ser objeto dos direitos de acesso, correção ou exclusão. Os dados gravados nos cadastros do seu Bitrix24 ficam inteiramente sob seu controle e responsabilidade.</p>
+
+        <h2>Privacidade de Menores</h2>
+        <p>O Aplicativo destina-se exclusivamente ao uso empresarial e não é direcionado a menores de 13 anos. Não coletamos intencionalmente informações de menores.</p>
+
+        <h2>Alterações nesta Política</h2>
+        <p>Podemos atualizar esta Política periodicamente. Notificaremos os usuários sobre alterações relevantes atualizando a data acima e, quando aplicável, por meio do próprio marketplace do Bitrix24.</p>
+
+        <h2>Contato</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- CNPJ · EN                             -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-cnpj-en">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Consulta de CNPJ for Bitrix24
+        </div>
+        <h1>Privacy Policy</h1>
+        <div class="doc-meta">
+          <span>Developer: <strong>TLJ Apps</strong></span>
+          <span>Last updated: <strong>May 2025</strong></span>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>Summary:</strong> This application does not collect, store, or sell any personal data. It acts solely as a bridge between Bitrix24 and the Brazilian Federal Revenue Service public database. All processing happens in real time.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Overview</h2>
+        <p>This Privacy Policy describes how TLJ Apps handles information in connection with the <strong>Consulta de CNPJ</strong> application for Bitrix24. The Application acts exclusively as a bridge between your CRM and the Brazilian Federal Revenue Service (Receita Federal) public database, without collecting or retaining user data.</p>
+
+        <h2>Data the Application Processes</h2>
+        <p>During use of the Application, the following data is processed in real time:</p>
+        <ul>
+          <li><strong>CNPJ number:</strong> sent to the ReceitaWS public API to retrieve company information from the Federal Revenue Service.</li>
+          <li><strong>Bitrix24 authentication token:</strong> used solely to write the returned data to the company record in your Bitrix24 portal. Tokens are used in memory and are never stored on our servers.</li>
+          <li><strong>Public company data:</strong> publicly available business registration data returned by Receita Federal (company name, CNAE activity code, address, partners, etc.) written to your Bitrix24 record.</li>
+        </ul>
+
+        <h2>What We Do Not Collect</h2>
+        <ul>
+          <li>We do not collect or store any personal data about your employees or end users.</li>
+          <li>We do not persist CNPJ numbers, authentication tokens, or company data on our servers.</li>
+          <li>We do not use cookies, tracking pixels, or any monitoring technologies.</li>
+          <li>We do not share any information with third parties for advertising or marketing purposes.</li>
+        </ul>
+
+        <h2>Third-Party Services</h2>
+        <p>The Application queries the <strong>ReceitaWS</strong> public API (<a href="https://receitaws.com.br" target="_blank">receitaws.com.br</a>), which retrieves data from the official Brazilian Federal Revenue Service database. ReceitaWS is subject to its own privacy policy and terms of service. All data returned is sourced from the public federal registry and does not constitute sensitive personal data.</p>
+
+        <h2>Data Retention</h2>
+        <p>The Application does not retain any data. All processing occurs in real time and nothing is persisted on our infrastructure after a query is completed.</p>
+
+        <h2>Security</h2>
+        <p>All communication between the Application and external services is performed exclusively over HTTPS with TLS. Authentication tokens are used transiently and discarded immediately after each operation.</p>
+
+        <h2>Your Rights</h2>
+        <p>Since we do not store any personal data, there is no information held by us that could be subject to access, correction, or deletion requests. The data written to your Bitrix24 company records is entirely under your control and responsibility.</p>
+
+        <h2>Children's Privacy</h2>
+        <p>The Application is intended for business use only and is not directed at children under the age of 13. We do not knowingly collect information from minors.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. We will notify users of any material changes by updating the date above and, where applicable, through the Bitrix24 marketplace.</p>
+
+        <h2>Contact</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WRITER · PT                           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-writer-pt">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge app-badge-writer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Amount Writer para Bitrix24
+        </div>
+        <h1>Política de Privacidade</h1>
+        <div class="doc-meta">
+          <span>Desenvolvedor: <strong>TLJ Apps</strong></span>
+          <span>Última atualização: <strong>abril de 2026</strong></span>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>Resumo:</strong> O aplicativo acessa apenas o valor do negócio para convertê-lo em texto por extenso. Nenhum dado pessoal é coletado ou vendido. As únicas informações armazenadas são configurações técnicas de autenticação com o Bitrix24.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Introdução</h2>
+        <p>Esta Política de Privacidade descreve como a TLJ Apps ("Empresa", "nós") coleta, usa e protege informações quando você utiliza o aplicativo <strong>Amount Writer</strong> na plataforma Bitrix24.</p>
+
+        <h2>Dados que Acessamos</h2>
+        <p>Quando o Aplicativo processa um negócio no CRM, ele acessa exclusivamente os seguintes campos:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Campo</th><th>Finalidade</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ID do negócio</td><td>Identificar o registro a ser atualizado</td></tr>
+              <tr><td>OPPORTUNITY (valor do negócio)</td><td>Realizar a conversão para texto por extenso</td></tr>
+              <tr><td>CURRENCY_ID</td><td>Determinar o idioma e formato corretos</td></tr>
+              <tr><td>Campos personalizados configurados pelo usuário</td><td>Ler valores de dinheiro extras e gravar os resultados convertidos</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Dados que Não Coletamos</h2>
+        <p>O Aplicativo não coleta, armazena, transmite nem vende quaisquer dados pessoais, informações de clientes, registros financeiros, dados de contato ou outras informações dos negócios da sua conta Bitrix24. Todo o processamento ocorre em tempo real e nenhum dado de CRM é retido após a conclusão da conversão.</p>
+
+        <h2>Dados Armazenados</h2>
+        <p>Os únicos dados armazenados pelo Aplicativo são as configurações técnicas necessárias para seu funcionamento:</p>
+        <ul>
+          <li>O domínio do seu portal Bitrix24</li>
+          <li>Tokens de autenticação OAuth (access token e refresh token)</li>
+          <li>Os códigos dos campos personalizados configurados por você</li>
+        </ul>
+        <p>Esses dados são armazenados de forma segura em banco de dados criptografado (Cloudflare D1) e utilizados exclusivamente para autenticação com a API do Bitrix24. Os tokens são renovados automaticamente e jamais compartilhados com terceiros.</p>
+
+        <h2>Assinatura e Pagamentos</h2>
+        <p>O Aplicativo utiliza o serviço <strong>Stripe</strong> para gerenciar assinaturas. O processamento de pagamentos é realizado diretamente pelo Stripe, sujeito à <a href="https://stripe.com/privacy" target="_blank">Política de Privacidade do Stripe</a>. A TLJ Apps não armazena dados de cartão de crédito ou informações financeiras pessoais. O único dado de assinatura armazenado por nós é o identificador de status da assinatura vinculado ao portal Bitrix24.</p>
+
+        <h2>Serviços de Terceiros</h2>
+        <p>O Aplicativo se comunica exclusivamente com:</p>
+        <ul>
+          <li><strong>API REST do Bitrix24</strong> (bitrix24.com, oauth.bitrix.info) — para leitura e atualização de negócios</li>
+          <li><strong>Stripe</strong> (stripe.com) — para gerenciamento de assinaturas</li>
+        </ul>
+        <p>Nenhum dado de CRM é enviado a qualquer outro serviço externo.</p>
+
+        <h2>Segurança dos Dados</h2>
+        <p>Implementamos medidas de segurança padrão da indústria: armazenamento criptografado em Cloudflare D1, comunicação exclusivamente via HTTPS/TLS e controle de acesso baseado em tokens OAuth. Não compartilhamos seus dados com terceiros além dos listados acima.</p>
+
+        <h2>Retenção e Exclusão de Dados</h2>
+        <p>Seus dados de configuração são mantidos enquanto o Aplicativo estiver instalado no seu portal Bitrix24. Ao desinstalar o Aplicativo, você pode solicitar a exclusão dos seus dados de configuração entrando em contato com <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>.</p>
+
+        <h2>Privacidade de Menores</h2>
+        <p>O Aplicativo é destinado exclusivamente ao uso empresarial e não é direcionado a menores de 13 anos. Não coletamos intencionalmente informações de menores.</p>
+
+        <h2>Alterações nesta Política</h2>
+        <p>Podemos atualizar esta Política periodicamente. Notificaremos os usuários sobre alterações significativas atualizando a data acima e, quando aplicável, através do marketplace do Bitrix24.</p>
+
+        <h2>Conformidade com a LGPD</h2>
+        <p>Este Aplicativo está em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Como os únicos dados pessoais armazenados são tokens de autenticação técnica, e não dados de pessoas físicas, o volume de dados sob nossa guarda é mínimo e estritamente necessário para o funcionamento do serviço.</p>
+
+        <h2>Contato</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WRITER · EN                           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="doc-panel" id="panel-writer-en">
+    <div class="doc-card">
+      <div class="doc-header">
+        <div class="app-badge app-badge-writer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Amount Writer for Bitrix24
+        </div>
+        <h1>Privacy Policy</h1>
+        <div class="doc-meta">
+          <span>Developer: <strong>TLJ Apps</strong></span>
+          <span>Last updated: <strong>April 2026</strong></span>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>Summary:</strong> The application only accesses deal values to convert them to written words. No personal data is collected or sold. The only stored information is technical authentication configuration for connecting to Bitrix24.
+      </div>
+
+      <div class="doc-body">
+
+        <h2>Introduction</h2>
+        <p>This Privacy Policy describes how TLJ Apps ("Company", "we", "us") collects, uses, and protects information when you use the <strong>Amount Writer</strong> application on the Bitrix24 platform.</p>
+
+        <h2>Data We Access</h2>
+        <p>When the Application processes a CRM deal, it accesses only the following fields:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Deal ID</td><td>Identify the record to be updated</td></tr>
+              <tr><td>OPPORTUNITY (deal value)</td><td>Perform the conversion to written words</td></tr>
+              <tr><td>CURRENCY_ID</td><td>Determine the correct language and format</td></tr>
+              <tr><td>Custom fields configured by the user</td><td>Read additional money values and write converted results</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Data We Do Not Collect</h2>
+        <p>The Application does not collect, store, transmit, or sell any personal data, customer information, financial records, contact details, or any other business data from your Bitrix24 account. All processing happens in real time and no CRM data is retained after the conversion is complete.</p>
+
+        <h2>Data Storage</h2>
+        <p>The only data stored by the Application is the technical configuration required for it to operate:</p>
+        <ul>
+          <li>Your Bitrix24 portal domain</li>
+          <li>OAuth authentication tokens (access token and refresh token)</li>
+          <li>The custom field codes configured by you</li>
+        </ul>
+        <p>This data is stored securely in an encrypted database (Cloudflare D1) and is used solely to authenticate with the Bitrix24 API. Tokens are renewed automatically and never shared with third parties.</p>
+
+        <h2>Subscriptions and Payments</h2>
+        <p>The Application uses <strong>Stripe</strong> for subscription management. Payment processing is handled directly by Stripe, subject to <a href="https://stripe.com/privacy" target="_blank">Stripe's Privacy Policy</a>. TLJ Apps does not store credit card details or personal financial information. The only subscription data stored by us is a status identifier linked to the Bitrix24 portal.</p>
+
+        <h2>Third-Party Services</h2>
+        <p>The Application communicates exclusively with:</p>
+        <ul>
+          <li><strong>Bitrix24 REST API</strong> (bitrix24.com, oauth.bitrix.info) — for reading and updating deals</li>
+          <li><strong>Stripe</strong> (stripe.com) — for subscription management</li>
+        </ul>
+        <p>No CRM data is sent to any other third-party service.</p>
+
+        <h2>Data Security</h2>
+        <p>We implement industry-standard security measures: encrypted storage on Cloudflare D1, HTTPS/TLS-only communication, and OAuth token-based access control. We do not share your data with any parties beyond those listed above.</p>
+
+        <h2>Data Retention and Deletion</h2>
+        <p>Your configuration data is retained for as long as the Application is installed in your Bitrix24 portal. When you uninstall the Application, you may request deletion of your configuration data by contacting <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>.</p>
+
+        <h2>Children's Privacy</h2>
+        <p>The Application is intended for business use only and is not directed at children under the age of 13. We do not knowingly collect information from minors.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. We will notify users of any significant changes by updating the date above and, where applicable, through the Bitrix24 marketplace.</p>
+
+        <h2>Contact</h2>
+        <div class="contact-card">
+          <div class="contact-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
+              <path d="M2 17l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">TLJ Apps</div>
+            <div class="contact-links">
+              <a href="mailto:contato@tlj.net.br">contato@tlj.net.br</a>
+              <a href="https://tlj.net.br" target="_blank">tlj.net.br</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  &copy; 2026 TLJ Apps &nbsp;&middot;&nbsp; <a href="https://tlj.net.br" style="color:inherit">tlj.net.br</a>
+</footer>
+
+<script>
+  var state = { app: 'cnpj', lang: 'pt' };
+
+  function render() {
+    document.querySelectorAll('.doc-panel').forEach(function(el){ el.classList.remove('visible'); });
+    var panel = document.getElementById('panel-' + state.app + '-' + state.lang);
+    if (panel) panel.classList.add('visible');
+
+    ['cnpj','writer'].forEach(function(a){
+      document.getElementById('apptab-' + a).classList.toggle('active', state.app === a);
+    });
+    ['pt','en'].forEach(function(l){
+      document.getElementById('langtab-' + l).classList.toggle('active', state.lang === l);
+    });
+
+    document.documentElement.lang = state.lang === 'pt' ? 'pt-BR' : 'en';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function setApp(app)   { state.app  = app;  render(); }
+  function setLang(lang) { state.lang = lang; render(); }
+</script>
+</body>
+</html>

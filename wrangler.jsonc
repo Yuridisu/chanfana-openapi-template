@@ -2,6 +2,9 @@
 	"compatibility_date": "2025-10-08",
 	"main": "src/index.ts",
 	"name": "chanfana-openapi-template",
+	"assets": {
+		"directory": "./public"
+	},
 	"upload_source_maps": true,
 	"observability": {
 		"enabled": true
@@ -13,6 +16,12 @@
 			"database_id": "74ad9021-956e-4716-be46-b745edb2c55a"
 		}
 	],
+	"kv_namespaces": [
+		{
+			"binding": "SUBSCRIPTIONS",
+			"id": "224e324f264c4c8db2cbda48ff2c2446"
+		}
+	],
 	"vars": {
 		// URL pública do Worker (sem barra no final)
 		"APP_URL": "https://extenso.tljapp.com"
@@ -21,5 +30,12 @@
 	// Secrets — execute no terminal:
 	//   npx wrangler secret put CLIENT_ID
 	//   npx wrangler secret put CLIENT_SECRET
-	// Valores obtidos ao cadastrar o app no Portal de Parceiros Bitrix24
+	//   npx wrangler secret put STRIPE_SECRET_KEY
+	//   npx wrangler secret put STRIPE_WEBHOOK_SECRET
+	//   npx wrangler secret put STRIPE_PRICE_ID
+	//
+	// CLIENT_ID / CLIENT_SECRET: obtidos no Portal de Parceiros Bitrix24
+	// STRIPE_SECRET_KEY:         Dashboard Stripe → Developers → API keys → Secret key
+	// STRIPE_WEBHOOK_SECRET:     Dashboard Stripe → Webhooks → Signing secret do endpoint
+	// STRIPE_PRICE_ID:           Dashboard Stripe → Product catalog → price_XXXX do plano mensal
 }

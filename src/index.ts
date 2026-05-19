@@ -333,7 +333,7 @@ async function createTrialRecord(kv: KVNamespace, memberId: string, domain: stri
 
 async function updateSubscriptionFromStripe(
   kv: KVNamespace, memberId: string,
-  patch: { status: SubscriptionStatus; stripeCustomerId?: string; stripeSubscriptionId?: string; currentPeriodEnd?: number },
+  patch: { status: SubscriptionStatus; stripeCustomerId?: string; stripeSubscriptionId?: string; currentPeriodEnd?: number; cancelAtPeriodEnd?: boolean },
 ): Promise<void> {
   const existing = await getSubscription(kv, memberId);
   if (!existing) return;
@@ -1339,15 +1339,17 @@ async function handleStripeWebhook(request: Request, env: Env, ctx: ExecutionCon
       }
 
       case "customer.subscription.updated": {
-        const memberId  = extractMetaMemberId(data);
-        const status    = mapStripeStatus(data["status"] as string);
-        const periodEnd = data["current_period_end"] as number | undefined;
+        const memberId         = extractMetaMemberId(data);
+        const status           = mapStripeStatus(data["status"] as string);
+        const periodEnd        = data["current_period_end"] as number | undefined;
+        const cancelAtPeriodEnd = !!(data["cancel_at_period_end"] as boolean | undefined);
         if (memberId) {
           await updateSubscriptionFromStripe(env.SUBSCRIPTIONS, memberId, {
             status,
             stripeSubscriptionId: data["id"] as string,
             stripeCustomerId:     data["customer"] as string,
             currentPeriodEnd:     periodEnd ? periodEnd * 1000 : undefined,
+            cancelAtPeriodEnd,
           });
         }
         break;

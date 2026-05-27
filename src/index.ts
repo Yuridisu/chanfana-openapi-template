@@ -300,6 +300,8 @@ interface SubscriptionRecord {
   stripeSubscriptionId?: string;
   currentPeriodEnd?:    number;  // unix ms
   cancelAtPeriodEnd?:   boolean;
+  /** True quando admin concedeu acesso manualmente (não veio de pagamento Stripe) */
+  manualGrant?:         boolean;
   updatedAt:            number;
 }
 
@@ -1576,30 +1578,38 @@ async function handleAdminListSubscriptions(request: Request, env: Env): Promise
     stripeCustomerId:     r.stripeCustomerId ?? null,
     currentPeriodEnd:     r.currentPeriodEnd ? new Date(r.currentPeriodEnd).toISOString() : null,
     cancelAtPeriodEnd:    !!r.cancelAtPeriodEnd,
+    manualGrant:          !!r.manualGrant,
   }));
 
   return jsonResp({ total: subscriptions.length, subscriptions });
 }
 
-// POST /api/admin/extenso-subscriptions/restore  { memberId, days }
+// POST /api/admin/extenso-subscriptions/restore  { memberId, days, mode?: 'trial'|'paid' }
+// mode='paid'  → status=active, currentPeriodEnd, mostrado como "Assinatura ativa até DATA"
+// mode='trial' (default) → status=trialing, trialEnd, mostrado como "Trial: X dias"
 async function handleAdminRestoreSubscription(request: Request, env: Env): Promise<Response> {
   if (!checkAdminKey(request, env)) return jsonResp({ error: "Unauthorized" }, 401);
 
-  const body = await request.json().catch(() => ({})) as { memberId?: string; days?: number };
+  type Body = { memberId?: string; days?: number; mode?: "trial" | "paid" };
+  const body = await request.json().catch(() => ({})) as Body;
   const memberId = body.memberId ?? "";
   const days     = Math.min(Math.max(body.days ?? 7, 1), 365);
+  const mode     = body.mode === "paid" ? "paid" : "trial";
   if (!memberId) return jsonResp({ error: "memberId obrigatorio" }, 400);
 
-  const now      = Date.now();
-  const trialEnd = now + days * 86_400_000;
+  const now    = Date.now();
+  const endMs  = now + days * 86_400_000;
   const existing = await getSubscription(env.SUBSCRIPTIONS, memberId);
+  const base: SubscriptionRecord = existing ?? {
+    memberId, domain: "", status: "trialing", installedAt: now, trialEnd: endMs, updatedAt: now,
+  };
 
-  const record: SubscriptionRecord = existing
-    ? { ...existing, status: "trialing", trialEnd, cancelAtPeriodEnd: false, updatedAt: now }
-    : { memberId, domain: "", status: "trialing", installedAt: now, trialEnd, updatedAt: now };
+  const record: SubscriptionRecord = mode === "paid"
+    ? { ...base, status: "active",   currentPeriodEnd: endMs, cancelAtPeriodEnd: false, manualGrant: true, updatedAt: now }
+    : { ...base, status: "trialing", trialEnd: endMs,         cancelAtPeriodEnd: false, manualGrant: true, updatedAt: now };
 
   await saveSubscriptionKV(env.SUBSCRIPTIONS, record);
-  return jsonResp({ ok: true, memberId, trialEnd, days });
+  return jsonResp({ ok: true, memberId, mode, days, endMs });
 }
 
 // POST /api/admin/extenso-subscriptions/revoke  { memberId }

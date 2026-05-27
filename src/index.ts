@@ -15,6 +15,8 @@ export interface Env {
   STRIPE_PRICE_ID: string;
   /** URL de webhook próprio para receber notificações de pagamento (opcional) */
   NOTIFY_WEBHOOK_URL?: string;
+  /** Chave secreta para autenticar chamadas administrativas (header X-Admin-Key) */
+  ADMIN_KEY: string;
 }
 
 // ─────────────────────────────────────────────
@@ -1540,6 +1542,98 @@ async function handleJsonApi(request: Request): Promise<Response> {
   return jsonResp({ extenso: convertAmount(value, currency) });
 }
 
+
+// ─────────────────────────────────────────────
+// Admin API — protegida por X-Admin-Key
+// Usada pelo painel administrativo (admin-panel)
+// ─────────────────────────────────────────────
+
+function checkAdminKey(request: Request, env: Env): boolean {
+  const key = request.headers.get("X-Admin-Key") ?? new URL(request.url).searchParams.get("key") ?? "";
+  return !!env.ADMIN_KEY && key === env.ADMIN_KEY;
+}
+
+// GET /api/admin/extenso-subscriptions
+async function handleAdminListSubscriptions(request: Request, env: Env): Promise<Response> {
+  if (!checkAdminKey(request, env)) return jsonResp({ error: "Unauthorized" }, 401);
+
+  const list = await env.SUBSCRIPTIONS.list({ prefix: KV_PREFIX });
+  const records: SubscriptionRecord[] = [];
+  for (const key of list.keys) {
+    const raw = await env.SUBSCRIPTIONS.get(key.name);
+    if (!raw) continue;
+    try { records.push(JSON.parse(raw) as SubscriptionRecord); } catch { /* skip */ }
+  }
+  records.sort((a, b) => (b.installedAt ?? 0) - (a.installedAt ?? 0));
+
+  const subscriptions = records.map(r => ({
+    memberId:             r.memberId,
+    domain:               r.domain,
+    status:               r.status,
+    trialEnd:             r.trialEnd ? new Date(r.trialEnd).toISOString() : null,
+    installedAt:          r.installedAt ? new Date(r.installedAt).toISOString() : null,
+    stripeSubscriptionId: r.stripeSubscriptionId ?? null,
+    stripeCustomerId:     r.stripeCustomerId ?? null,
+    currentPeriodEnd:     r.currentPeriodEnd ? new Date(r.currentPeriodEnd).toISOString() : null,
+    cancelAtPeriodEnd:    !!r.cancelAtPeriodEnd,
+  }));
+
+  return jsonResp({ total: subscriptions.length, subscriptions });
+}
+
+// POST /api/admin/extenso-subscriptions/restore  { memberId, days }
+async function handleAdminRestoreSubscription(request: Request, env: Env): Promise<Response> {
+  if (!checkAdminKey(request, env)) return jsonResp({ error: "Unauthorized" }, 401);
+
+  const body = await request.json().catch(() => ({})) as { memberId?: string; days?: number };
+  const memberId = body.memberId ?? "";
+  const days     = Math.min(Math.max(body.days ?? 7, 1), 365);
+  if (!memberId) return jsonResp({ error: "memberId obrigatorio" }, 400);
+
+  const now      = Date.now();
+  const trialEnd = now + days * 86_400_000;
+  const existing = await getSubscription(env.SUBSCRIPTIONS, memberId);
+
+  const record: SubscriptionRecord = existing
+    ? { ...existing, status: "trialing", trialEnd, cancelAtPeriodEnd: false, updatedAt: now }
+    : { memberId, domain: "", status: "trialing", installedAt: now, trialEnd, updatedAt: now };
+
+  await saveSubscriptionKV(env.SUBSCRIPTIONS, record);
+  return jsonResp({ ok: true, memberId, trialEnd, days });
+}
+
+// POST /api/admin/extenso-subscriptions/revoke  { memberId }
+async function handleAdminRevokeSubscription(request: Request, env: Env): Promise<Response> {
+  if (!checkAdminKey(request, env)) return jsonResp({ error: "Unauthorized" }, 401);
+
+  const body = await request.json().catch(() => ({})) as { memberId?: string };
+  const memberId = body.memberId ?? "";
+  if (!memberId) return jsonResp({ error: "memberId obrigatorio" }, 400);
+
+  const existing = await getSubscription(env.SUBSCRIPTIONS, memberId);
+  if (!existing) return jsonResp({ error: "not_found" }, 404);
+
+  const updated: SubscriptionRecord = {
+    ...existing,
+    status:    "cancelled",
+    trialEnd:  Date.now(),
+    updatedAt: Date.now(),
+  };
+  await saveSubscriptionKV(env.SUBSCRIPTIONS, updated);
+  return jsonResp({ ok: true, memberId });
+}
+
+// DELETE /api/admin/extenso-subscriptions?mid=xxx
+async function handleAdminDeleteSubscription(request: Request, env: Env): Promise<Response> {
+  if (!checkAdminKey(request, env)) return jsonResp({ error: "Unauthorized" }, 401);
+
+  const memberId = new URL(request.url).searchParams.get("mid") ?? "";
+  if (!memberId) return jsonResp({ error: "mid obrigatorio" }, 400);
+
+  await env.SUBSCRIPTIONS.delete(`${KV_PREFIX}${memberId}`);
+  return jsonResp({ ok: true, memberId });
+}
+
 // ─────────────────────────────────────────────
 // Entry point
 // ─────────────────────────────────────────────
@@ -1559,6 +1653,10 @@ export default {
     if (pathname === "/subscribe/success"   && method === "GET")                    return handleSubscribeSuccess(request, env);
     if (pathname === "/subscribe/cancel"    && method === "GET")                    return handleSubscribeCancel();
     if (pathname === "/api/stripe-webhook"  && method === "POST")                   return handleStripeWebhook(request, env, ctx);
+    if (pathname === "/api/admin/extenso-subscriptions"         && method === "GET")    return handleAdminListSubscriptions(request, env);
+    if (pathname === "/api/admin/extenso-subscriptions/restore" && method === "POST")   return handleAdminRestoreSubscription(request, env);
+    if (pathname === "/api/admin/extenso-subscriptions/revoke"  && method === "POST")   return handleAdminRevokeSubscription(request, env);
+    if (pathname === "/api/admin/extenso-subscriptions"         && method === "DELETE") return handleAdminDeleteSubscription(request, env);
     if (pathname === "/bitrix"              && method === "POST")                   return handleBitrixEvent(request, env);
     return handleJsonApi(request);
   },

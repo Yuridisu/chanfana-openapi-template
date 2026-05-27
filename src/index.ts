@@ -575,7 +575,7 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
     .page-right{flex:1;display:flex;flex-direction:column;align-items:center;overflow:hidden;min-width:0}
 
     /* ── Main content ── */
-    .main{width:100%;max-width:680px;padding:0 20px 40px;display:flex;flex-direction:column;gap:16px;border-top:1.5px solid var(--border)}
+    .main{width:100%;max-width:1100px;padding:0 0 40px;display:flex;flex-direction:column;gap:16px;border-top:1.5px solid var(--border)}
     .tab-content{padding-top:20px}
 
     /* ── Cards ── */
@@ -617,6 +617,34 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
 
     /* ── Save row ── */
     .save-row{display:flex;align-items:center;gap:12px;padding-top:4px}
+
+    /* ── Status banner ── */
+    .status-banner{margin:20px 20px 0;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;font-weight:600}
+    .status-banner.banner-active{background:#e6f9ee;border:1.5px solid #8ecfa6;color:#1a7e40}
+    .status-banner.banner-trial {background:#e8f3fb;border:1.5px solid #a8d5f5;color:#1c5f92}
+    .status-banner.banner-blocked{background:#fff2f2;border:1.5px solid #e8b4b8;color:#cc0000}
+    .status-banner .banner-text{display:flex;flex-direction:column;gap:2px}
+    .status-banner .banner-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.85}
+    .status-banner .banner-detail{font-size:13px}
+    .status-banner .banner-cta{font-size:12px;font-weight:700;padding:7px 16px;border-radius:7px;text-decoration:none;white-space:nowrap}
+
+    /* ── Layout duas colunas ── */
+    .two-col{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;padding:0 20px}
+    .two-col .config-section{min-width:0}
+    .two-col .sub-card{position:sticky;top:20px}
+    @media (max-width:880px){
+      .two-col{grid-template-columns:1fr}
+      .two-col .sub-card{position:static}
+    }
+
+    /* ── Paywall overlay (config bloqueado) ── */
+    .config-section{position:relative}
+    .config-section.locked .tab-content{filter:blur(3px);pointer-events:none;user-select:none}
+    .paywall-overlay{position:absolute;inset:20px 0 0 0;background:rgba(255,255,255,.88);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px 24px;border-radius:12px;text-align:center;backdrop-filter:blur(1px)}
+    .paywall-overlay[style*="display:flex"], .paywall-overlay[style*="display: flex"]{display:flex}
+    .paywall-icon{font-size:56px;line-height:1}
+    .paywall-title{font-size:18px;font-weight:800;color:#1a1a2e}
+    .paywall-desc{font-size:13px;color:#666;max-width:320px;line-height:1.55}
 
     /* ── Plan card ── */
     .plan-card{border-radius:12px;border:2px solid var(--border);padding:24px;text-align:center}
@@ -668,6 +696,9 @@ var T = {
     addMappingBtn: '＋ Adicionar mapeamento',
     extraHint: 'Cada mapeamento converte um campo de dinheiro para extenso e grava o resultado num campo de texto de sua escolha.',
     saveBtn: 'Salvar configurações',
+    paywallTitle: 'Assinatura necessária',
+    paywallDesc: 'Assine para configurar e usar o conversor de valores por extenso.',
+    paywallBtn: '⚡ Ver planos de assinatura',
     savedSuccess: 'Configurações salvas com sucesso!',
     subCardTitle: 'Plano e cobrança',
     loadingSub: 'Carregando assinatura...',
@@ -704,6 +735,9 @@ var T = {
     addMappingBtn: '＋ Add mapping',
     extraHint: 'Each mapping converts a money field to written form and saves the result in a text field of your choice.',
     saveBtn: 'Save settings',
+    paywallTitle: 'Subscription required',
+    paywallDesc: 'Subscribe to configure and use the amount-to-words converter.',
+    paywallBtn: '⚡ View subscription plans',
     savedSuccess: 'Settings saved successfully!',
     subCardTitle: 'Plan & billing',
     loadingSub: 'Loading subscription...',
@@ -764,8 +798,63 @@ function formatDate(ms) {
     : d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
+function fmtBR(ms) {
+  if (!ms) return '';
+  var d = new Date(ms);
+  return ('0'+d.getDate()).slice(-2) + '/' + ('0'+(d.getMonth()+1)).slice(-2) + '/' + d.getFullYear();
+}
+function updateLockAndBanner(d) {
+  var locked  = !d.allowed;
+  var section = document.getElementById('config-section');
+  if (section) section.classList.toggle('locked', locked);
+
+  var overlay = document.getElementById('paywall-overlay');
+  if (overlay) overlay.style.display = locked ? 'flex' : 'none';
+
+  var cta = document.getElementById('paywall-cta');
+  if (cta && window._subUrl) cta.setAttribute('href', window._subUrl);
+
+  var banner = document.getElementById('status-banner');
+  if (!banner) return;
+  banner.classList.remove('banner-active','banner-trial','banner-blocked');
+
+  if (d.status === 'active') {
+    banner.classList.add('banner-active');
+    banner.innerHTML =
+      '<div class="banner-text">' +
+        '<div class="banner-label">✅ ' + (LANG === 'en' ? 'Active subscription' : 'Assinatura ativa') + '</div>' +
+        (d.currentPeriodEnd ? '<div class="banner-detail">' + (LANG === 'en' ? 'Active until ' : 'Ativa até ') + '<strong>' + fmtBR(d.currentPeriodEnd) + '</strong></div>' : '') +
+      '</div>';
+  } else if (d.status === 'trialing') {
+    var days = d.daysRemaining || 0;
+    var dayWord = LANG === 'en' ? (days === 1 ? 'day' : 'days') : (days === 1 ? 'dia' : 'dias');
+    banner.classList.add('banner-trial');
+    banner.innerHTML =
+      '<div class="banner-text">' +
+        '<div class="banner-label">⏳ ' + (LANG === 'en' ? 'Trial period' : 'Período de avaliação') + '</div>' +
+        '<div class="banner-detail">' + days + ' ' + dayWord + ' ' + (LANG === 'en' ? 'remaining' : 'restantes') +
+        (d.trialEnd ? ' · ' + (LANG === 'en' ? 'until ' : 'até ') + '<strong>' + fmtBR(d.trialEnd) + '</strong>' : '') +
+        '</div>' +
+      '</div>' +
+      '<a class="banner-cta btn-primary" href="' + (window._subUrl || '#') + '" target="_blank" style="color:#fff;background:var(--blue)">' + (LANG === 'en' ? 'Subscribe now' : 'Assinar agora') + '</a>';
+  } else {
+    banner.classList.add('banner-blocked');
+    var msg = d.status === 'trial_expired'
+      ? (LANG === 'en' ? 'Free trial expired' : 'Período de avaliação encerrado')
+      : (LANG === 'en' ? 'No active subscription' : 'Sem assinatura ativa');
+    banner.innerHTML =
+      '<div class="banner-text">' +
+        '<div class="banner-label">⚠️ ' + msg + '</div>' +
+        '<div class="banner-detail">' + (LANG === 'en' ? 'Subscribe to use the app.' : 'Assine para liberar o app.') + '</div>' +
+      '</div>' +
+      '<a class="banner-cta btn-primary" href="' + (window._subUrl || '#') + '" target="_blank" style="color:#fff;background:var(--blue)">' + (LANG === 'en' ? 'Subscribe now' : 'Assinar agora') + '</a>';
+  }
+}
+
 window.renderSubTab = function(d) {
   window._lastSubData = d;
+  window._subUrl = window._subUrl || _subUrl;
+  updateLockAndBanner(d);
   var t  = T[LANG];
   var el = document.getElementById('subContent');
   if (!el) return;
@@ -833,15 +922,8 @@ BX24.init(function() {
   // Apply saved language on init
   applyLang(LANG);
 
-  // ── Tab switching ──────────────────────────────────────────
-  window.showTab = function(name) {
-    document.querySelectorAll('.tab-content').forEach(function(el){ el.style.display = 'none'; });
-    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-    document.getElementById('tab-' + name).style.display = 'block';
-    document.querySelector('[data-tab="' + name + '"]').classList.add('active');
-  };
-  var initTab = (new URLSearchParams(window.location.search)).get('tab') || 'config';
-  showTab(initTab);
+  // ── Tab switching removido: layout unificado (config + assinatura na mesma tela) ──
+  window.showTab = function(){};  // no-op para compatibilidade com chamadas legadas
 
   // ── Subscription tab ───────────────────────────────────────
   _subUrl = ${JSON.stringify(appUrl)} + '/subscribe?member_id=' + encodeURIComponent(memberId) + '&domain=' + encodeURIComponent(domain);
@@ -1011,15 +1093,23 @@ BX24.init(function() {
   <!-- ── Main area ─────────────────────────────────── -->
   <div class="page-right">
 
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="config" onclick="showTab('config')"><span data-i18n="tabConfig">⚙️ Configuração</span></button>
-      <button class="tab-btn" data-tab="assinatura" onclick="showTab('assinatura')"><span data-i18n="tabSub">💳 Assinatura</span></button>
-    </div>
-
     <div class="main">
 
-      <!-- ── Aba: Configuração ──────────────────── -->
-      <div id="tab-config" class="tab-content">
+      <!-- ── Status banner (Trial até / Ativo até / Sem assinatura) ── -->
+      <div id="status-banner" class="status-banner"></div>
+
+      <!-- ── Layout duas colunas: config + assinatura ── -->
+      <div class="two-col">
+
+      <!-- ── Seção principal: Configuração (com paywall overlay quando travado) ── -->
+      <div id="config-section" class="config-section">
+        <div class="paywall-overlay" id="paywall-overlay" style="display:none">
+          <div class="paywall-icon">🔒</div>
+          <div class="paywall-title" data-i18n="paywallTitle">Assinatura necessária</div>
+          <div class="paywall-desc" data-i18n="paywallDesc">Assine para configurar e usar o conversor de valores por extenso.</div>
+          <a id="paywall-cta" class="btn-primary" href="#" target="_blank" style="text-decoration:none;padding:11px 24px;font-size:13px;cursor:pointer" data-i18n="paywallBtn">⚡ Ver planos de assinatura</a>
+        </div>
+        <div class="tab-content">
 
         ${successMsg}
 
@@ -1070,17 +1160,18 @@ BX24.init(function() {
         </div>
 
         ${tableHtml}
-      </div>
+        </div><!-- /tab-content -->
+      </div><!-- /config-section -->
 
-      <!-- ── Aba: Assinatura ────────────────────── -->
-      <div id="tab-assinatura" class="tab-content" style="display:none">
-        <div class="card">
-          <div class="card-title"><span class="card-title-dot"></span><span data-i18n="subCardTitle">Plano e cobrança</span></div>
-          <div id="subContent">
-            <div class="loading-row"><div class="spinner"></div><span data-i18n="loadingSub">Carregando...</span></div>
-          </div>
+      <!-- ── Card de gerenciamento de plano (sempre visível, coluna direita) ── -->
+      <div class="card sub-card">
+        <div class="card-title"><span class="card-title-dot"></span><span data-i18n="subCardTitle">Plano e cobrança</span></div>
+        <div id="subContent">
+          <div class="loading-row"><div class="spinner"></div><span data-i18n="loadingSub">Carregando...</span></div>
         </div>
       </div>
+
+      </div><!-- /two-col -->
 
       <div class="app-footer"><span data-i18n="footer">Amount Writer — TLJ Apps</span> &copy; ${new Date().getFullYear()}</div>
 

@@ -687,7 +687,7 @@ var T = {
     loadingFields: 'Carregando campos disponíveis...',
     errorFields: '❌ Erro ao carregar campos. Tente novamente.',
     mainFieldBadge: 'Campo principal', extraBadge: 'Mapeamento extra',
-    moneyFieldLabel: 'Campo de dinheiro', textFieldLabel: 'Campo de texto (extenso)',
+    moneyFieldLabel: 'Campo de dinheiro / Número', textFieldLabel: 'Campo de texto (extenso)',
     mainMoneyHint: 'Campo padrão do Bitrix24 — sempre ativo',
     mainMoneyValue: 'Valor do Negócio (OPPORTUNITY)',
     mainTextHint: 'Campo onde o valor será gravado por extenso',
@@ -726,7 +726,7 @@ var T = {
     loadingFields: 'Loading available fields...',
     errorFields: '❌ Error loading fields. Please try again.',
     mainFieldBadge: 'Main field', extraBadge: 'Extra mapping',
-    moneyFieldLabel: 'Money field', textFieldLabel: 'Text field (written out)',
+    moneyFieldLabel: 'Money / Number field', textFieldLabel: 'Text field (written out)',
     mainMoneyHint: 'Default Bitrix24 field — always active',
     mainMoneyValue: 'Deal Value (OPPORTUNITY)',
     mainTextHint: 'Field where the value will be written out',
@@ -1130,7 +1130,7 @@ BX24.init(function() {
                 <span class="mapping-badge" data-i18n="mainFieldBadge">Campo principal</span>
                 <div class="mapping-grid">
                   <div>
-                    <label data-i18n="moneyFieldLabel">Campo de dinheiro</label>
+                    <label data-i18n="moneyFieldLabel">Campo de dinheiro / Número</label>
                     <input type="text" class="fake-select" data-i18n-val="mainMoneyValue" value="Valor do Negócio (OPPORTUNITY)" disabled>
                     <p class="hint" data-i18n="mainMoneyHint">Campo padrão do Bitrix24 — sempre ativo</p>
                   </div>

@@ -584,7 +584,7 @@ async function handleSetupGet(request: Request, env: Env): Promise<Response> {
     .card-title-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0}
 
     /* ── Toast ── */
-    .toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600}
+    .toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin:8px 20px 0}
     .toast-success{background:var(--success-bg);color:var(--success);border:1.5px solid #8ecfa6}
     .toast-info{background:var(--blue-light);border:1.5px solid #a8d5f5;color:#1c5f92}
     .toast-warning{background:#fff8ec;border:1.5px solid #f5c97a;color:#92600a}
@@ -865,9 +865,7 @@ window.renderSubTab = function(d) {
     html = '<div class="plan-card active-plan">'
       + '<div class="plan-status-badge badge-active">' + t.badgeActive + '</div>'
       + '<div class="plan-name">' + t.appName + '</div>'
-      + '<div class="plan-price">$5<span>' + t.pricePerMonth + '</span></div>'
-      + '<div class="plan-desc">' + t.planDesc + '</div>'
-      + (d.currentPeriodEnd ? '<div class="plan-detail">' + t.nextBilling + ' <strong>' + formatDate(d.currentPeriodEnd) + '</strong></div>' : '')
+      + (d.currentPeriodEnd ? '<div class="plan-detail" style="margin-top:10px">' + t.nextBilling + ' <strong>' + formatDate(d.currentPeriodEnd) + '</strong></div>' : '')
       + '</div>'
       + '<div style="margin-top:16px;text-align:center">'
       + '<button class="btn-danger" onclick="cancelSubscription()" id="cancelBtn">' + t.cancelBtn + '</button>'
@@ -888,8 +886,7 @@ window.renderSubTab = function(d) {
     html = '<div class="plan-card">'
       + '<div class="plan-status-badge badge-trial">' + t.badgeTrial + '</div>'
       + '<div class="plan-name">' + t.appName + '</div>'
-      + '<div class="plan-price">$5<span>' + t.pricePerMonth + '</span></div>'
-      + '<div class="plan-desc">' + t.trialDesc(days) + '</div>'
+      + '<div class="plan-desc" style="margin-top:10px">' + t.trialDesc(days) + '</div>'
       + '</div>'
       + '<div style="margin-top:16px;text-align:center">'
       + '<a class="btn-primary" style="' + btnStyle + '" href="' + _subUrl + '" target="_blank">' + t.subscribeBtn + '</a>'
@@ -899,8 +896,7 @@ window.renderSubTab = function(d) {
     html = '<div class="plan-card">'
       + '<div class="plan-status-badge badge-expired">' + t.badgeExpired + '</div>'
       + '<div class="plan-name">' + t.appName + '</div>'
-      + '<div class="plan-price">$5<span>' + t.pricePerMonth + '</span></div>'
-      + '<div class="plan-desc">' + t.expiredDesc + '</div>'
+      + '<div class="plan-desc" style="margin-top:10px">' + t.expiredDesc + '</div>'
       + '</div>'
       + '<div style="margin-top:16px;text-align:center">'
       + '<a class="btn-primary" style="' + btnStyle + '" href="' + _subUrl + '" target="_blank">' + t.subscribeBtn + '</a>'
@@ -1098,6 +1094,9 @@ BX24.init(function() {
       <!-- ── Status banner (Trial até / Ativo até / Sem assinatura) ── -->
       <div id="status-banner" class="status-banner"></div>
 
+      <!-- ── Toast de sucesso (fora do two-col para não desalinhar) ── -->
+      ${successMsg}
+
       <!-- ── Layout duas colunas: config + assinatura ── -->
       <div class="two-col">
 
@@ -1110,8 +1109,6 @@ BX24.init(function() {
           <a id="paywall-cta" class="btn-primary" href="#" target="_blank" style="text-decoration:none;padding:11px 24px;font-size:13px;cursor:pointer" data-i18n="paywallBtn">⚡ Ver planos de assinatura</a>
         </div>
         <div class="tab-content">
-
-        ${successMsg}
 
         <div class="card">
           <div class="card-title"><span class="card-title-dot"></span><span data-i18n="configCardTitle">Configuração de campos</span></div>
@@ -1288,9 +1285,78 @@ async function handleCancelSubscription(request: Request, env: Env): Promise<Res
 }
 
 // ─────────────────────────────────────────────
-// Route: GET /subscribe
+// Route: GET /subscribe  — landing page com preço
 // ─────────────────────────────────────────────
 async function handleSubscribe(request: Request, env: Env): Promise<Response> {
+  const url      = new URL(request.url);
+  const memberId = url.searchParams.get("member_id") ?? "";
+  const domain   = url.searchParams.get("domain") ?? "";
+
+  if (!memberId || !domain)
+    return html(`<h2 class="error">⚠️ Parâmetros inválidos. Feche esta janela e tente novamente pelo Bitrix24.</h2>`, 400);
+
+  const checkoutUrl = `${env.APP_URL}/subscribe/checkout?member_id=${encodeURIComponent(memberId)}&domain=${encodeURIComponent(domain)}`;
+
+  const page = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Assinar – Valor por Extenso</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:40px 36px;max-width:420px;width:100%;text-align:center}
+    .logo{height:40px;margin-bottom:20px}
+    .plan-badge{display:inline-block;background:#e8f3fb;color:#1c5f92;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+    .app-name{font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:6px}
+    .app-desc{font-size:14px;color:#555;line-height:1.55;margin-bottom:24px}
+    .price-block{background:#f4f6f9;border-radius:12px;padding:20px;margin-bottom:24px}
+    .price-main{font-size:42px;font-weight:900;color:#5BA4CF;line-height:1}
+    .price-period{font-size:15px;color:#777;margin-top:4px}
+    .price-trial{font-size:13px;color:#1a7e40;font-weight:600;margin-top:10px;background:#e6f9ee;border-radius:8px;padding:6px 12px;display:inline-block}
+    .features{text-align:left;margin-bottom:28px;display:flex;flex-direction:column;gap:8px}
+    .feature{display:flex;align-items:center;gap:8px;font-size:13px;color:#333}
+    .feature::before{content:'✓';color:#5BA4CF;font-weight:700;flex-shrink:0}
+    .btn-checkout{display:block;width:100%;padding:14px;background:#5BA4CF;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:background .15s}
+    .btn-checkout:hover{background:#4a93be}
+    .terms{font-size:11px;color:#aaa;margin-top:14px;line-height:1.5}
+    .terms a{color:#aaa}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="${env.APP_URL}/logo-tlj.png" alt="TLJ Apps" class="logo">
+    <div class="plan-badge">Plano Mensal</div>
+    <div class="app-name">Valor por Extenso</div>
+    <div class="app-desc">Converta automaticamente valores monetários para extenso em todos os seus negócios no Bitrix24.</div>
+    <div class="price-block">
+      <div class="price-main">$5</div>
+      <div class="price-period">por mês · cobrado mensalmente</div>
+      <div class="price-trial">🎁 7 dias grátis para experimentar</div>
+    </div>
+    <div class="features">
+      <div class="feature">Conversão automática ao salvar negócios</div>
+      <div class="feature">Suporte a BRL, USD, EUR e outras moedas</div>
+      <div class="feature">Múltiplos campos configuráveis</div>
+      <div class="feature">Cancele quando quiser</div>
+    </div>
+    <a class="btn-checkout" href="${checkoutUrl}">⚡ Prosseguir para o pagamento</a>
+    <div class="terms">
+      Ao assinar você concorda com os <a href="${env.APP_URL}/eula.html" target="_blank">Termos de Uso</a>
+      e <a href="${env.APP_URL}/privacy-policy.html" target="_blank">Política de Privacidade</a>.
+      Renovação automática. Cancele a qualquer momento.
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return new Response(page, { headers: { "Content-Type": "text/html;charset=utf-8" } });
+}
+
+// ─────────────────────────────────────────────
+// Route: GET /subscribe/checkout  — cria sessão Stripe e redireciona
+// ─────────────────────────────────────────────
+async function handleSubscribeCheckout(request: Request, env: Env): Promise<Response> {
   const url      = new URL(request.url);
   const memberId = url.searchParams.get("member_id") ?? "";
   const domain   = url.searchParams.get("domain") ?? "";
@@ -1309,7 +1375,7 @@ async function handleSubscribe(request: Request, env: Env): Promise<Response> {
     return new Response(null, { status: 303, headers: { Location: session.url } });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Erro ao criar sessão de pagamento.";
-    console.error("[subscribe] Erro ao criar checkout:", msg);
+    console.error("[subscribe/checkout] Erro ao criar checkout:", msg);
     return html(`<h2 class="error">⚠️ Erro ao iniciar pagamento: ${msg}</h2>`, 500);
   }
 }
@@ -1751,6 +1817,7 @@ export default {
     if (pathname === "/api/status"          && method === "GET")                    return handleApiStatus(request, env);
     if (pathname === "/api/cancel-subscription" && method === "POST")              return handleCancelSubscription(request, env);
     if (pathname === "/subscribe"           && method === "GET")                    return handleSubscribe(request, env);
+    if (pathname === "/subscribe/checkout"  && method === "GET")                    return handleSubscribeCheckout(request, env);
     if (pathname === "/subscribe/success"   && method === "GET")                    return handleSubscribeSuccess(request, env);
     if (pathname === "/subscribe/cancel"    && method === "GET")                    return handleSubscribeCancel();
     if (pathname === "/api/stripe-webhook"  && method === "POST")                   return handleStripeWebhook(request, env, ctx);
